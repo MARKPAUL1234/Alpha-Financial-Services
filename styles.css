@@ -2,32 +2,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  /* Bespoke Institutional Color System */
+  /* Bespoke Institutional Glassmorphism Color System */
   --navy-obsidian: #070D18;
-  --navy-header: #0F172A;
-  --navy-surface: #1E293B;
+  --navy-header: rgba(15, 23, 42, 0.85);
+  --navy-surface: rgba(30, 41, 59, 0.7);
   
-  --canvas-bg: #F8FAFC;
-  --surface-card: #FFFFFF;
-  --surface-subtle: #F1F5F9;
-  --surface-sidebar: #091322;
-  --surface-hover: #F8FAFC;
+  --canvas-bg: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 50%, #F8FAFC 100%);
+  --surface-card: rgba(255, 255, 255, 0.75);
+  --surface-subtle: rgba(241, 245, 249, 0.65);
+  --surface-sidebar: rgba(9, 19, 34, 0.92);
+  --surface-hover: rgba(255, 255, 255, 0.85);
 
   /* Purposeful Financial Accents */
   --accent-emerald: #047857;
-  --accent-emerald-light: #ECFDF5;
+  --accent-emerald-light: rgba(236, 253, 245, 0.8);
   --accent-emerald-border: #A7F3D0;
   
   --accent-bronze: #B45309;
-  --accent-bronze-light: #FFFBEB;
+  --accent-bronze-light: rgba(255, 251, 235, 0.8);
   --accent-bronze-border: #FDE68A;
 
   --accent-crimson: #B91C1C;
-  --accent-crimson-light: #FEF2F2;
+  --accent-crimson-light: rgba(254, 242, 242, 0.8);
   --accent-crimson-border: #FECACA;
 
   --accent-navy: #1D4ED8;
-  --accent-navy-light: #EFF6FF;
+  --accent-navy-light: rgba(239, 246, 255, 0.8);
   --accent-navy-border: #BFDBFE;
 
   /* Typography & Neutrals */
@@ -37,22 +37,24 @@
   --text-sidebar-muted: #94A3B8;
   --text-inverse: #FFFFFF;
 
-  /* Borders & Hairlines */
-  --border-hairline: #E2E8F0;
-  --border-subtle: #CBD5E1;
-  --border-sidebar: rgba(255, 255, 255, 0.08);
+  /* Borders & Hairlines with Glass Highlights */
+  --border-hairline: rgba(226, 232, 240, 0.8);
+  --border-subtle: rgba(203, 213, 225, 0.6);
+  --border-glass: rgba(255, 255, 255, 0.6);
+  --border-sidebar: rgba(255, 255, 255, 0.12);
   --border-focus: #1D4ED8;
 
   /* Elevation & Shadows */
-  --shadow-subtle: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
-  --shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.03), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
-  --shadow-overlay: 0 20px 25px -5px rgba(15, 23, 42, 0.2), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
+  --shadow-subtle: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  --shadow-card: 0 10px 30px -5px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+  --shadow-overlay: 0 25px 35px -5px rgba(15, 23, 42, 0.25), 0 10px 15px -5px rgba(15, 23, 42, 0.15);
+  --glass-blur: blur(16px);
 
   /* Radius Tokens */
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
   --radius-full: 9999px;
 
   /* Motion */
@@ -133,6 +135,8 @@ th.num-header,
 .sidebar {
   width: 270px;
   background-color: var(--surface-sidebar);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   color: var(--text-inverse);
   display: flex;
   flex-direction: column;
@@ -187,7 +191,7 @@ th.num-header,
   padding: 16px 12px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   flex: 1;
   overflow-y: auto;
 }
@@ -205,7 +209,7 @@ th.num-header,
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
+  padding: 10px 14px;
   color: var(--text-sidebar-muted);
   text-decoration: none;
   border-radius: var(--radius-sm);
@@ -213,6 +217,7 @@ th.num-header,
   font-weight: 600;
   transition: var(--transition-fast);
   position: relative;
+  border: 1px solid transparent;
 }
 
 .nav-item i {
@@ -223,21 +228,44 @@ th.num-header,
 
 .nav-item:hover {
   color: var(--text-inverse);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .nav-item:hover i {
   color: var(--text-inverse);
 }
 
+/* Active Tab Glowing Glass Effect with Blinking Background Pulse */
 .nav-item.active {
   color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.08);
-  border-left: 3px solid #38BDF8;
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.25) 0%, rgba(29, 78, 216, 0.2) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2);
+  animation: activeTabGlowBlink 2.5s infinite alternate ease-in-out;
 }
 
 .nav-item.active i {
   color: #38BDF8;
+  filter: drop-shadow(0 0 6px #38BDF8);
+}
+
+@keyframes activeTabGlowBlink {
+  0% {
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.35) 0%, rgba(29, 78, 216, 0.3) 100%);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4), inset 0 0 10px rgba(56, 189, 248, 0.2);
+    border-color: rgba(56, 189, 248, 0.6);
+  }
+  50% {
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.15) 0%, rgba(29, 78, 216, 0.1) 100%);
+    box-shadow: 0 0 5px rgba(56, 189, 248, 0.15);
+    border-color: rgba(56, 189, 248, 0.3);
+  }
+  100% {
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.35) 0%, rgba(29, 78, 216, 0.3) 100%);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4), inset 0 0 10px rgba(56, 189, 248, 0.2);
+    border-color: rgba(56, 189, 248, 0.6);
+  }
 }
 
 .badge-counter {
@@ -329,6 +357,8 @@ th.num-header,
 
 .top-navbar {
   background: var(--surface-card);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   height: 72px;
   padding: 0 32px;
   display: flex;
@@ -362,6 +392,7 @@ th.num-header,
 
 .currency-badge {
   background: var(--surface-subtle);
+  backdrop-filter: var(--glass-blur);
   border: 1px solid var(--border-hairline);
   padding: 6px 12px;
   border-radius: var(--radius-sm);
@@ -379,6 +410,7 @@ th.num-header,
 
 .icon-btn {
   background: var(--surface-card);
+  backdrop-filter: var(--glass-blur);
   border: 1px solid var(--border-hairline);
   width: 38px;
   height: 38px;
@@ -439,13 +471,15 @@ th.num-header,
 
 .kpi-card {
   background: var(--surface-card);
-  border: 1px solid var(--border-hairline);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
   padding: 20px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  box-shadow: var(--shadow-subtle);
+  box-shadow: var(--shadow-card);
   position: relative;
   overflow: hidden;
   transition: var(--transition-fast);
@@ -454,35 +488,69 @@ th.num-header,
 }
 
 .kpi-card:hover {
-  border-color: var(--border-subtle);
-  box-shadow: var(--shadow-card);
-  transform: translateY(-2px);
+  border-color: var(--accent-navy-border);
+  box-shadow: 0 12px 32px -4px rgba(29, 78, 216, 0.15);
+  transform: translateY(-3px);
 }
 
 .kpi-card:active,
 .btn-primary:active,
 .btn-secondary:active,
-.nav-item:active,
 .action-icon:active,
 .icon-btn:active,
 .role-switcher-btn:active,
 button:active {
-  animation: buttonBlinkPulse 0.35s ease-out;
+  animation: buttonBlinkPulse 0.4s ease-out;
 }
 
+/* Enhanced Color Background Blinking Pulse */
 @keyframes buttonBlinkPulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(29, 78, 216, 0.4), 0 0 0 8px rgba(29, 78, 216, 0.25);
-    filter: brightness(1.25);
+    background-color: rgba(56, 189, 248, 0.45) !important;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.7), inset 0 0 12px rgba(255, 255, 255, 0.6);
+    transform: scale(0.97);
+    filter: brightness(1.3);
   }
   50% {
-    box-shadow: 0 0 0 12px rgba(29, 78, 216, 0.15), 0 0 0 16px rgba(29, 78, 216, 0);
-    filter: brightness(0.9);
+    background-color: rgba(29, 78, 216, 0.35) !important;
+    box-shadow: 0 0 30px rgba(29, 78, 216, 0.5);
+    filter: brightness(0.95);
   }
   100% {
     box-shadow: none;
+    transform: scale(1);
     filter: brightness(1);
   }
+}
+
+.kpi-card.accent-blue:active {
+  animation: kpiBlueBlink 0.4s ease-out;
+}
+.kpi-card.accent-emerald:active {
+  animation: kpiEmeraldBlink 0.4s ease-out;
+}
+.kpi-card.accent-amber:active {
+  animation: kpiAmberBlink 0.4s ease-out;
+}
+.kpi-card.accent-crimson:active {
+  animation: kpiCrimsonBlink 0.4s ease-out;
+}
+
+@keyframes kpiBlueBlink {
+  0% { background: rgba(29, 78, 216, 0.45) !important; box-shadow: 0 0 25px rgba(29, 78, 216, 0.7); }
+  100% { background: var(--surface-card); }
+}
+@keyframes kpiEmeraldBlink {
+  0% { background: rgba(4, 120, 87, 0.45) !important; box-shadow: 0 0 25px rgba(4, 120, 87, 0.7); }
+  100% { background: var(--surface-card); }
+}
+@keyframes kpiAmberBlink {
+  0% { background: rgba(180, 83, 9, 0.45) !important; box-shadow: 0 0 25px rgba(180, 83, 9, 0.7); }
+  100% { background: var(--surface-card); }
+}
+@keyframes kpiCrimsonBlink {
+  0% { background: rgba(185, 28, 28, 0.45) !important; box-shadow: 0 0 25px rgba(185, 28, 28, 0.7); }
+  100% { background: var(--surface-card); }
 }
 
 .kpi-card::before {
