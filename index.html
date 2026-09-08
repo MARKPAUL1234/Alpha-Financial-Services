@@ -3,21 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alpha Financial Services | Enterprise Loan Management Application</title>
+  <title>Alpha Financial Services | Enterprise Credit Management Platform</title>
   
   <!-- Remixicon Icons -->
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
   
-  <!-- Main Stylesheet -->
+  <!-- Custom Institutional Stylesheet -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
   <div id="app-container">
     
-    <!-- ==========================================================================
-         SIDEBAR NAVIGATION (Dark Blue Theme)
-         ========================================================================== -->
+    <!-- SIDEBAR NAVIGATION -->
     <aside class="sidebar" id="sidebar">
       <div>
         <div class="brand-header">
@@ -31,46 +29,46 @@
         </div>
 
         <nav class="sidebar-nav">
-          <div class="nav-section-title">Main Portal</div>
+          <div class="nav-section-title">Credit Operations</div>
           <a href="#" class="nav-item active" data-view="dashboard">
             <i class="ri-dashboard-3-line"></i>
-            <span>Dashboard</span>
+            <span>Portfolio Overview</span>
           </a>
           <a href="#" class="nav-item" data-view="borrowers">
             <i class="ri-user-follow-line"></i>
-            <span>Borrowers Directory</span>
+            <span>Borrower Registry & CRB</span>
           </a>
           <a href="#" class="nav-item" data-view="loans">
             <i class="ri-bank-card-line"></i>
-            <span>Loan Applications</span>
+            <span>Credit Origination Pipeline</span>
           </a>
           <a href="#" class="nav-item" data-view="repayments">
             <i class="ri-safe-2-line"></i>
-            <span>Repayments Ledger</span>
+            <span>Disbursement & Amortization</span>
           </a>
           <a href="#" class="nav-item" data-view="arrears">
             <i class="ri-alarm-warning-line"></i>
-            <span>Overdue & Arrears</span>
-            <span class="badge-counter" id="overdue-badge-count">2</span>
+            <span>Delinquent Facilities & NPA</span>
+            <span class="badge-counter" id="overdue-badge-count">1</span>
           </a>
 
-          <div class="nav-section-title">Administration</div>
+          <div class="nav-section-title">System & Parameters</div>
           <a href="#" class="nav-item" data-view="products">
             <i class="ri-price-tag-3-line"></i>
-            <span>Loan Types & Plans</span>
+            <span>Credit Products & Matrices</span>
           </a>
           <a href="#" class="nav-item" data-view="reports">
             <i class="ri-bar-chart-box-line"></i>
-            <span>Portfolio Reports</span>
+            <span>Yield & Risk Analytics</span>
           </a>
           <a href="#" class="nav-item" data-view="settings">
             <i class="ri-settings-4-line"></i>
-            <span>Branding & Settings</span>
+            <span>Institution Settings</span>
           </a>
         </nav>
       </div>
 
-      <!-- User Profile & Role Switcher Footer -->
+      <!-- User Profile & Role Footer -->
       <div class="sidebar-footer">
         <div class="user-card">
           <div class="user-avatar" id="user-avatar-display">AM</div>
@@ -78,23 +76,21 @@
             <div class="user-name" id="user-name-display">Alex Mercer</div>
             <div class="user-role-badge" id="user-role-display">Admin</div>
           </div>
-          <button class="role-switcher-btn" id="toggle-role-btn" title="Toggle Role (Admin/Staff)">
+          <button class="role-switcher-btn" id="toggle-role-btn" title="Toggle Operator Role (Admin/Staff)">
             <i class="ri-swap-line"></i>
           </button>
         </div>
       </div>
     </aside>
 
-    <!-- ==========================================================================
-         MAIN CONTAINER
-         ========================================================================== -->
+    <!-- MAIN CONTAINER -->
     <main class="main-wrapper">
       
       <!-- Top Navbar -->
       <header class="top-navbar">
         <div class="page-title-box">
-          <h2 id="page-title-text">Executive Dashboard</h2>
-          <p id="page-subtitle-text">Real-time loan portfolio performance & metrics</p>
+          <h2 id="page-title-text">Portfolio Performance & Exposure</h2>
+          <p class="page-subtitle-text" id="page-subtitle-text">Institutional credit analytics & real-time capital allocation</p>
         </div>
 
         <div class="navbar-actions">
@@ -103,13 +99,13 @@
             <span class="currency-code-display">UGX</span> (<span class="currency-symbol-display">UGX</span>)
           </div>
 
-          <button class="icon-btn" title="System Notifications">
+          <button class="icon-btn" title="System Alerts">
             <i class="ri-notification-3-line"></i>
             <span class="pulse-dot"></span>
           </button>
 
           <button class="btn-primary" onclick="openNewLoanModal()">
-            <i class="ri-add-line"></i> New Loan Application
+            <i class="ri-add-line"></i> New Credit Facility
           </button>
         </div>
       </header>
@@ -119,58 +115,53 @@
         
         <!-- 1. DASHBOARD VIEW -->
         <section id="view-dashboard" class="view-section active">
-          
-          <!-- KPI Metrics Row -->
           <div class="grid-kpi">
             <div class="kpi-card accent-blue">
               <div class="kpi-info">
-                <p>Gross Portfolio Value</p>
-                <h3 id="kpi-portfolio">UGX 0</h3>
-                <span class="kpi-trend positive"><i class="ri-arrow-up-line"></i> +12.4% vs last mth</span>
+                <p>Gross Portfolio Capital</p>
+                <h3 id="kpi-portfolio" class="font-tabular">UGX 0</h3>
+                <span class="kpi-trend positive"><i class="ri-arrow-up-line"></i> +12.4% yield performance</span>
               </div>
               <div class="kpi-icon-box"><i class="ri-briefcase-4-line"></i></div>
             </div>
 
             <div class="kpi-card accent-emerald">
               <div class="kpi-info">
-                <p>Repayments Received</p>
-                <h3 id="kpi-collected">UGX 0</h3>
-                <span class="kpi-trend positive"><i class="ri-check-double-line"></i> On-time collection rate 94%</span>
+                <p>Amortization Collections</p>
+                <h3 id="kpi-collected" class="font-tabular">UGX 0</h3>
+                <span class="kpi-trend positive"><i class="ri-check-double-line"></i> 94.2% collection rate</span>
               </div>
               <div class="kpi-icon-box"><i class="ri-shield-check-line"></i></div>
             </div>
 
             <div class="kpi-card accent-amber">
               <div class="kpi-info">
-                <p>Active Loan Accounts</p>
-                <h3 id="kpi-active-loans">0</h3>
-                <span class="kpi-trend neutral"><i class="ri-user-star-line"></i> Borrowers: <span id="kpi-borrowers">0</span></span>
+                <p>Performing Facilities</p>
+                <h3 id="kpi-active-loans" class="font-tabular">0</h3>
+                <span class="kpi-trend neutral"><i class="ri-user-star-line"></i> Registrations: <span id="kpi-borrowers">0</span></span>
               </div>
               <div class="kpi-icon-box"><i class="ri-exchange-dollar-line"></i></div>
             </div>
 
             <div class="kpi-card accent-crimson">
               <div class="kpi-info">
-                <p>Overdue / Arrears</p>
-                <h3 id="kpi-arrears">UGX 0</h3>
-                <span class="kpi-trend negative"><i class="ri-error-warning-line"></i> Action required</span>
+                <p>NPA & Delinquent Exposure</p>
+                <h3 id="kpi-arrears" class="font-tabular">UGX 0</h3>
+                <span class="kpi-trend negative"><i class="ri-error-warning-line"></i> Review required</span>
               </div>
               <div class="kpi-icon-box"><i class="ri-time-line"></i></div>
             </div>
           </div>
 
-          <!-- Dashboard Main Layout Grid -->
           <div class="dashboard-grid">
-            
-            <!-- Left Side: Recent Repayments Table & Charts -->
             <div>
               <div class="card">
                 <div class="card-header">
                   <div class="card-title-box">
-                    <h3>Recent Loan Repayments</h3>
-                    <p>Latest payment collections across active facilities</p>
+                    <h3>Recent Amortization Transactions</h3>
+                    <p>Verified repayment collections across active credit lines</p>
                   </div>
-                  <button class="btn-secondary btn-sm" onclick="renderCurrentView('repayments')">View All Ledger</button>
+                  <button class="btn-secondary btn-sm" onclick="renderCurrentView('repayments')">Full Amortization Ledger</button>
                 </div>
                 <div class="table-responsive">
                   <table class="custom-table">
@@ -178,14 +169,12 @@
                       <tr>
                         <th>Receipt #</th>
                         <th>Borrower</th>
-                        <th>Date</th>
-                        <th>Amount Paid</th>
-                        <th>Payment Method</th>
+                        <th>Posting Date</th>
+                        <th class="num-header">Amount Paid</th>
+                        <th>Method</th>
                       </tr>
                     </thead>
-                    <tbody id="dashboard-recent-table">
-                      <!-- Populated via JavaScript -->
-                    </tbody>
+                    <tbody id="dashboard-recent-table"></tbody>
                   </table>
                 </div>
               </div>
@@ -193,186 +182,158 @@
               <div class="card">
                 <div class="card-header">
                   <div class="card-title-box">
-                    <h3>Portfolio Mix by Product</h3>
-                    <p>Capital allocation across loan types</p>
+                    <h3>Capital Allocation by Product</h3>
+                    <p>Asset mix breakdown across specialized credit facilities</p>
                   </div>
                 </div>
-                <div id="chart-portfolio-mix">
-                  <!-- Visual Chart Bar Component -->
-                </div>
+                <div id="chart-portfolio-mix" style="padding:16px 24px;"></div>
               </div>
             </div>
 
-            <!-- Right Side: AI Portfolio Copilot & Overdue Alerts -->
             <div>
-              <div class="ai-copilot-card">
-                <div class="ai-header">
-                  <span class="ai-badge">AI COPILOT</span>
-                  <h4 style="font-size:15px; font-weight:800;">Portfolio Intelligence</h4>
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title-box">
+                    <h3>Risk Management Alerts</h3>
+                    <p>Actionable collection recommendations</p>
+                  </div>
                 </div>
-                <p class="ai-content">
-                  AI insights detected 2 accounts requiring immediate repayment follow-up. Overall credit risk remains optimal at 94.2% collection efficiency.
-                </p>
-                <div class="ai-recommendation-list" id="dashboard-alerts-widget">
-                  <!-- Populated via JavaScript -->
-                </div>
+                <div class="ai-recommendations" id="dashboard-alerts-widget"></div>
               </div>
             </div>
-
           </div>
         </section>
 
-        <!-- 2. BORROWERS DIRECTORY VIEW -->
+        <!-- 2. BORROWERS VIEW -->
         <section id="view-borrowers" class="view-section">
           <div class="card">
-            <div class="table-filter-bar">
-              <div class="search-input-wrap">
+            <div class="table-toolbar">
+              <div class="search-box">
                 <i class="ri-search-line"></i>
-                <input type="text" id="borrower-search-input" placeholder="Search by name, NIN, phone..." oninput="renderBorrowersView()">
+                <input type="text" id="borrower-search-input" placeholder="Search by name, NIN, phone, or ID..." onkeyup="renderBorrowersView()">
               </div>
-              <button class="btn-primary" onclick="openBorrowerModal()">
-                <i class="ri-user-add-line"></i> Register New Borrower
+              <button class="btn-primary" onclick="openNewBorrowerModal()">
+                <i class="ri-user-add-line"></i> Register Borrower Profile
               </button>
             </div>
-            
             <div class="table-responsive">
               <table class="custom-table">
                 <thead>
                   <tr>
                     <th>Borrower ID</th>
-                    <th>Full Name</th>
-                    <th>Contact Info</th>
-                    <th>Employment</th>
-                    <th>Credit Rating</th>
-                    <th>Active Facilities</th>
+                    <th>Full Legal Name</th>
+                    <th>Contact Credentials</th>
+                    <th>Occupation / Business</th>
+                    <th>CRB Score</th>
+                    <th>Credit Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody id="borrowers-table-body">
-                  <!-- Populated via JavaScript -->
-                </tbody>
+                <tbody id="borrowers-table-body"></tbody>
               </table>
             </div>
           </div>
         </section>
 
-        <!-- 3. LOAN APPLICATIONS PIPELINE VIEW -->
+        <!-- 3. LOANS VIEW -->
         <section id="view-loans" class="view-section">
           <div class="card">
-            <div class="table-filter-bar">
-              <div class="filter-group">
-                <div class="search-input-wrap">
-                  <i class="ri-search-line"></i>
-                  <input type="text" id="loan-search-input" placeholder="Search loan ID, borrower..." oninput="renderLoansView()">
-                </div>
-                <select class="select-filter" id="loan-status-filter" onchange="renderLoansView()">
-                  <option value="ALL">All Statuses</option>
-                  <option value="PENDING APPROVAL">Pending Approval</option>
-                  <option value="APPROVED">Approved</option>
-                  <option value="ACTIVE">Active</option>
-                  <option value="OVERDUE">Overdue</option>
-                  <option value="COMPLETED">Completed</option>
-                  <option value="DENIED">Denied</option>
-                </select>
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="ri-search-line"></i>
+                <input type="text" id="loan-search-input" placeholder="Search by facility ID or borrower..." onkeyup="renderLoansView()">
               </div>
-
-              <button class="btn-primary" onclick="openNewLoanModal()">
-                <i class="ri-add-circle-line"></i> New Application
-              </button>
+              <select id="loan-status-filter" style="padding:8px 12px; border:1px solid var(--border-hairline); border-radius:6px; font-size:13px;" onchange="renderLoansView()">
+                <option value="ALL">All Statuses</option>
+                <option value="ACTIVE">Active Facilities</option>
+                <option value="PENDING APPROVAL">Pending Approval</option>
+                <option value="APPROVED">Approved (Ready for Disbursement)</option>
+                <option value="OVERDUE">Delinquent / Overdue</option>
+                <option value="COMPLETED">Fully Settled</option>
+              </select>
             </div>
-
             <div class="table-responsive">
               <table class="custom-table">
                 <thead>
                   <tr>
-                    <th>Loan ID</th>
-                    <th>Borrower</th>
-                    <th>Loan Product</th>
-                    <th>Principal</th>
-                    <th>Terms</th>
+                    <th>Facility ID</th>
+                    <th>Borrower Profile</th>
+                    <th>Product Type</th>
+                    <th class="num-header">Principal Capital</th>
+                    <th class="num-header">Interest Matrix</th>
                     <th>Status</th>
-                    <th>Remaining Bal</th>
-                    <th>Actions</th>
+                    <th class="num-header">Remaining Balance</th>
+                    <th>Underwriting</th>
                   </tr>
                 </thead>
-                <tbody id="loans-table-body">
-                  <!-- Populated via JavaScript -->
-                </tbody>
+                <tbody id="loans-table-body"></tbody>
               </table>
             </div>
           </div>
         </section>
 
-        <!-- 4. REPAYMENTS LEDGER VIEW -->
+        <!-- 4. REPAYMENTS VIEW -->
         <section id="view-repayments" class="view-section">
           <div class="card">
-            <div class="table-filter-bar">
-              <div class="card-title-box">
-                <h3>Recorded Payment Ledger</h3>
-                <p>History of all installment collections and payment receipts</p>
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="ri-search-line"></i>
+                <input type="text" id="repayment-search-input" placeholder="Search by receipt # or borrower..." onkeyup="renderRepaymentsView()">
               </div>
               <button class="btn-primary" onclick="openRecordRepaymentModal()">
-                <i class="ri-hand-coin-line"></i> Record Repayment
+                <i class="ri-add-line"></i> Post Repayment Entry
               </button>
             </div>
-
             <div class="table-responsive">
               <table class="custom-table">
                 <thead>
                   <tr>
                     <th>Receipt #</th>
-                    <th>Loan ID</th>
-                    <th>Borrower</th>
-                    <th>Payment Date</th>
-                    <th>Amount Paid</th>
-                    <th>Method / Ref</th>
-                    <th>Receipt</th>
+                    <th>Facility ID</th>
+                    <th>Borrower Name</th>
+                    <th>Value Date</th>
+                    <th class="num-header">Credit Amount</th>
+                    <th>Channel</th>
+                    <th>Audit</th>
                   </tr>
                 </thead>
-                <tbody id="repayments-table-body">
-                  <!-- Populated via JavaScript -->
-                </tbody>
+                <tbody id="repayments-table-body"></tbody>
               </table>
             </div>
           </div>
         </section>
 
-        <!-- 5. OVERDUE & ARREARS VIEW -->
+        <!-- 5. ARREARS VIEW -->
         <section id="view-arrears" class="view-section">
           <div class="card">
             <div class="card-header">
               <div class="card-title-box">
-                <h3 style="color:#DC2626;"><i class="ri-error-warning-line"></i> Delinquent Installments & Arrears Tracker</h3>
-                <p>Monitor overdue repayment schedules, aging days past due (DPD), and penalty levies</p>
+                <h3>Non-Performing & Overdue Facilities</h3>
+                <p>Facilities exceeding agreed payment grace periods</p>
               </div>
             </div>
-
             <div class="table-responsive">
               <table class="custom-table">
                 <thead>
                   <tr>
-                    <th>Loan ID</th>
+                    <th>Facility ID</th>
                     <th>Borrower Name</th>
-                    <th>Installment #</th>
-                    <th>Aging Status</th>
-                    <th>Installment Due</th>
-                    <th>Penalty Applied</th>
-                    <th>Collection Actions</th>
+                    <th>Product Facility</th>
+                    <th>Due Date</th>
+                    <th class="num-header">Penalty Fee</th>
+                    <th class="num-header">Total Overdue</th>
+                    <th>Recovery</th>
                   </tr>
                 </thead>
-                <tbody id="arrears-table-body">
-                  <!-- Populated via JavaScript -->
-                </tbody>
+                <tbody id="arrears-table-body"></tbody>
               </table>
             </div>
           </div>
         </section>
 
-        <!-- 6. LOAN PRODUCTS VIEW -->
+        <!-- 6. PRODUCTS VIEW -->
         <section id="view-products" class="view-section">
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px;" id="products-cards-grid">
-            <!-- Populated via JavaScript -->
-          </div>
+          <div id="products-grid-container" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:20px;"></div>
         </section>
 
         <!-- 7. REPORTS VIEW -->
@@ -381,222 +342,194 @@
             <div class="kpi-card accent-blue">
               <div class="kpi-info">
                 <p>Total Capital Disbursed</p>
-                <h3 id="report-disbursed">UGX 0</h3>
+                <h3 id="report-disbursed" class="font-tabular">UGX 0</h3>
               </div>
             </div>
             <div class="kpi-card accent-emerald">
               <div class="kpi-info">
                 <p>Total Interest Revenue Earned</p>
-                <h3 id="report-interest">UGX 0</h3>
+                <h3 id="report-interest" class="font-tabular">UGX 0</h3>
               </div>
             </div>
             <div class="kpi-card accent-amber">
               <div class="kpi-info">
-                <p>Portfolio Repayment Efficiency</p>
-                <h3 id="report-repayment-rate">94.2%</h3>
+                <p>Portfolio Yield Rate</p>
+                <h3 id="report-repayment-rate" class="font-tabular">94.2%</h3>
               </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title-box">
-                <h3>Export Portfolio Data</h3>
-                <p>Download full reports in CSV format</p>
-              </div>
-              <button class="btn-secondary" onclick="showToast('Exporting portfolio report to CSV...', 'info')">
-                <i class="ri-download-line"></i> Export CSV
-              </button>
             </div>
           </div>
         </section>
 
-        <!-- 8. BRANDING & SETTINGS VIEW -->
+        <!-- 8. SETTINGS VIEW -->
         <section id="view-settings" class="view-section">
-          <div class="settings-grid">
-            <div class="card">
-              <div class="card-header">
-                <div class="card-title-box">
-                  <h3>Client Branding & Contact Details</h3>
-                  <p>Customize organization header, logo text, contact numbers and currency formatting</p>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-box">
+                <h3>Institution Legal & Currency Settings</h3>
+                <p>Configure corporate identity, tax TIN & primary operating currency</p>
+              </div>
+            </div>
+            <form id="settings-form">
+              <div class="form-grid">
+                <div class="form-group full-width">
+                  <label>Institution Name</label>
+                  <input type="text" id="setting-biz-name" required>
+                </div>
+                <div class="form-group">
+                  <label>Tagline</label>
+                  <input type="text" id="setting-tagline">
+                </div>
+                <div class="form-group">
+                  <label>Header Brand Text</label>
+                  <input type="text" id="setting-logo-text" required>
+                </div>
+                <div class="form-group">
+                  <label>Operating Currency Code</label>
+                  <input type="text" id="setting-currency" required>
+                </div>
+                <div class="form-group">
+                  <label>Operating Currency Symbol</label>
+                  <input type="text" id="setting-currency-symbol" required>
+                </div>
+                <div class="form-group">
+                  <label>Official Phone Contact</label>
+                  <input type="text" id="setting-phone">
+                </div>
+                <div class="form-group">
+                  <label>Official Email Address</label>
+                  <input type="email" id="setting-email">
+                </div>
+                <div class="form-group full-width">
+                  <label>Physical Registered Address</label>
+                  <input type="text" id="setting-address">
                 </div>
               </div>
-              
-              <form id="settings-form">
-                <div class="form-grid">
-                  <div class="form-group full-width">
-                    <label>Business Name</label>
-                    <input type="text" id="setting-biz-name" required>
-                  </div>
-                  <div class="form-group">
-                    <label>Tagline</label>
-                    <input type="text" id="setting-tagline">
-                  </div>
-                  <div class="form-group">
-                    <label>Logo Text</label>
-                    <input type="text" id="setting-logo-text" required>
-                  </div>
-                  <div class="form-group">
-                    <label>Currency Code (e.g. UGX, USD, KES, EUR)</label>
-                    <input type="text" id="setting-currency" required>
-                  </div>
-                  <div class="form-group">
-                    <label>Currency Symbol (e.g. UGX, USh, Shs, $)</label>
-                    <input type="text" id="setting-currency-symbol" required>
-                  </div>
-                  <div class="form-group">
-                    <label>Phone Contact</label>
-                    <input type="text" id="setting-phone">
-                  </div>
-                  <div class="form-group">
-                    <label>Support Email</label>
-                    <input type="email" id="setting-email">
-                  </div>
-                  <div class="form-group full-width">
-                    <label>Physical Address</label>
-                    <input type="text" id="setting-address">
-                  </div>
-                </div>
-                <div style="margin-top:20px; text-align:right;">
-                  <button type="submit" class="btn-primary">Save Branding Settings</button>
-                </div>
-              </form>
-            </div>
-
-            <div class="branding-preview-card">
-              <h4>Branding Preview</h4>
-              <div class="brand-preview-logo">
-                <i class="ri-pulse-line"></i> <span id="preview-logo-text">ALPHA FINANCIAL</span>
+              <div style="padding:16px 24px; border-top:1px solid var(--border-hairline); text-align:right;">
+                <button type="submit" class="btn-primary">Save Parameters</button>
               </div>
-              <p style="font-size:12px; opacity:0.8;">
-                Changes saved here will reflect immediately across all dashboard headers, tables, loan agreements, receipts, and borrower statements.
-              </p>
-              <button class="btn-secondary btn-sm" style="color:white; border-color:rgba(255,255,255,0.3); background:transparent;" onclick="AppStore.reset()">
-                <i class="ri-refresh-line"></i> Reset Store to Defaults
-              </button>
-            </div>
+            </form>
           </div>
         </section>
 
       </div>
     </main>
-
   </div>
 
-  <!-- ==========================================================================
-       MODALS CONTAINERS
-       ========================================================================== -->
-  
-  <!-- 1. REGISTER BORROWER MODAL -->
-  <div class="modal-overlay" id="modal-add-borrower">
+  <!-- MODALS -->
+
+  <!-- 1. NEW LOAN MODAL -->
+  <div class="modal-overlay" id="modal-new-loan">
     <div class="modal-container">
       <div class="modal-header">
         <div class="modal-title-box">
-          <h3>Register New Borrower</h3>
-          <p>Enter client identity and employment particulars</p>
+          <h3>New Credit Facility Application</h3>
+          <p>Originate new credit line and calculate schedule</p>
         </div>
         <button class="modal-close-btn">&times;</button>
       </div>
-      <form id="form-add-borrower">
+      <form id="form-new-loan">
         <div class="modal-body">
           <div class="form-grid">
-            <div class="form-group">
-              <label>First Name</label>
-              <input type="text" id="bor-fname" required>
-            </div>
-            <div class="form-group">
-              <label>Last Name</label>
-              <input type="text" id="bor-lname" required>
-            </div>
-            <div class="form-group">
-              <label>National ID / NIN / SSN</label>
-              <input type="text" id="bor-nin" required>
-            </div>
-            <div class="form-group">
-              <label>Phone Number</label>
-              <input type="text" id="bor-phone" required>
-            </div>
-            <div class="form-group">
-              <label>Email Address</label>
-              <input type="email" id="bor-email" required>
-            </div>
-            <div class="form-group">
-              <label>Est. Monthly Income</label>
-              <input type="number" id="bor-income" required>
+            <div class="form-group full-width">
+              <label>Select Borrower Profile</label>
+              <select id="loan-borrower-select" required></select>
             </div>
             <div class="form-group full-width">
-              <label>Employment / Business</label>
-              <input type="text" id="bor-emp" placeholder="e.g. Managing Director - Agro Traders" required>
-            </div>
-            <div class="form-group full-width">
-              <label>Residential Address</label>
-              <textarea id="bor-address" rows="2" required></textarea>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn-secondary modal-cancel-btn">Cancel</button>
-          <button type="submit" class="btn-primary">Register Borrower</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- 2. NEW LOAN APPLICATION MODAL -->
-  <div class="modal-overlay" id="modal-add-loan">
-    <div class="modal-container lg">
-      <div class="modal-header">
-        <div class="modal-title-box">
-          <h3>New Loan Application Wizard</h3>
-          <p>Configure loan parameters & preview automated amortization schedule</p>
-        </div>
-        <button class="modal-close-btn">&times;</button>
-      </div>
-      <form id="form-add-loan">
-        <div class="modal-body">
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Select Borrower</label>
-              <select id="loan-bor-select" required></select>
+              <label>Select Credit Product</label>
+              <select id="loan-product-select" required></select>
             </div>
             <div class="form-group">
-              <label>Select Loan Product</label>
-              <select id="loan-prod-select" required></select>
+              <label>Principal Amount (UGX)</label>
+              <input type="number" id="loan-principal" min="100000" step="50000" placeholder="e.g. 15000000" required>
             </div>
             <div class="form-group">
-              <label>Principal Amount</label>
-              <input type="number" id="loan-amount" min="100" value="5000" required>
+              <label>Interest Rate (% P.A.)</label>
+              <input type="number" id="loan-rate" step="0.1" value="14.0" required>
             </div>
             <div class="form-group">
               <label>Tenure (Months)</label>
               <input type="number" id="loan-months" min="1" max="60" value="12" required>
             </div>
             <div class="form-group full-width">
-              <label>Collateral Description / Security Pledge</label>
-              <input type="text" id="loan-collateral" placeholder="e.g. Motor Vehicle Title # 8849-B" required>
+              <label>Collateral Security Description</label>
+              <input type="text" id="loan-collateral" placeholder="e.g. Commercial Motor Vehicle Registration UBE 489X" required>
             </div>
           </div>
 
-          <!-- Schedule Preview Calculator Box -->
           <div class="calculator-box">
-            <h4 style="font-size:12px; font-weight:800; text-transform:uppercase; color:var(--bg-primary); margin-bottom:8px;">Schedule Calculator Preview</h4>
+            <h4 style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px;">Schedule Calculator Preview</h4>
             <div class="calc-row">
               <span>Total Interest Payable:</span>
-              <strong id="calc-preview-interest">UGX 0</strong>
+              <strong id="calc-preview-interest" class="font-tabular">UGX 0</strong>
             </div>
             <div class="calc-row">
               <span>Estimated Monthly Installment:</span>
-              <strong id="calc-preview-monthly">UGX 0</strong>
+              <strong id="calc-preview-monthly" class="font-tabular">UGX 0</strong>
             </div>
             <div class="calc-row total">
-              <span>Total Loan Repayable Amount:</span>
-              <strong id="calc-preview-total" style="color:var(--color-accent-blue);">UGX 0</strong>
+              <span>Total Repayable Amount:</span>
+              <strong id="calc-preview-total" class="font-tabular" style="color:var(--accent-navy);">UGX 0</strong>
             </div>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn-secondary modal-cancel-btn">Cancel</button>
-          <button type="submit" class="btn-primary">Submit Loan Application</button>
+          <button type="submit" class="btn-primary">Submit for Underwriting</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. REGISTER BORROWER MODAL -->
+  <div class="modal-overlay" id="modal-new-borrower">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title-box">
+          <h3>Register Borrower Profile</h3>
+          <p>Capture national identity credentials & income profile</p>
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="form-new-borrower">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" id="bor-firstname" required>
+            </div>
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" id="bor-lastname" required>
+            </div>
+            <div class="form-group">
+              <label>National ID (NIN)</label>
+              <input type="text" id="bor-nin" placeholder="e.g. CM89012345KLMN" required>
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="text" id="bor-phone" placeholder="e.g. +256 772 100 200" required>
+            </div>
+            <div class="form-group full-width">
+              <label>Email Address</label>
+              <input type="email" id="bor-email" required>
+            </div>
+            <div class="form-group full-width">
+              <label>Residential / Business Address</label>
+              <input type="text" id="bor-address" required>
+            </div>
+            <div class="form-group">
+              <label>Occupation / Employment</label>
+              <input type="text" id="bor-employment" required>
+            </div>
+            <div class="form-group">
+              <label>Monthly Income (UGX)</label>
+              <input type="number" id="bor-income" placeholder="e.g. 5000000" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary modal-cancel-btn">Cancel</button>
+          <button type="submit" class="btn-primary">Save Profile</button>
         </div>
       </form>
     </div>
@@ -607,8 +540,8 @@
     <div class="modal-container">
       <div class="modal-header">
         <div class="modal-title-box">
-          <h3>Record Borrower Repayment</h3>
-          <p>Credit borrower account and update amortization ledger</p>
+          <h3>Record Amortization Payment</h3>
+          <p>Credit borrower account and update schedule</p>
         </div>
         <button class="modal-close-btn">&times;</button>
       </div>
@@ -616,48 +549,72 @@
         <div class="modal-body">
           <div class="form-grid">
             <div class="form-group full-width">
-              <label>Select Loan Account</label>
+              <label>Select Facility Account</label>
               <select id="repay-loan-select" required></select>
             </div>
             <div class="form-group">
-              <label>Amount Paid</label>
-              <input type="number" step="0.01" id="repay-amount" required>
+              <label>Amount Paid (UGX)</label>
+              <input type="number" id="repay-amount" required>
             </div>
             <div class="form-group">
-              <label>Payment Method</label>
+              <label>Payment Channel</label>
               <select id="repay-method" required>
                 <option value="Bank Wire Transfer">Bank Wire Transfer</option>
-                <option value="Mobile Money">Mobile Money</option>
+                <option value="MTN Mobile Money">MTN Mobile Money</option>
+                <option value="Airtel Money">Airtel Money</option>
                 <option value="Direct Cash Deposit">Direct Cash Deposit</option>
-                <option value="Cheque / Draft">Cheque / Draft</option>
               </select>
             </div>
             <div class="form-group full-width">
-              <label>Transaction Reference # / Slip</label>
-              <input type="text" id="repay-ref" placeholder="e.g. TRX-990142" required>
+              <label>Transaction Reference #</label>
+              <input type="text" id="repay-ref" placeholder="e.g. TRX-88491024" required>
+            </div>
+            <div class="form-group full-width">
+              <label>Posting Notes</label>
+              <input type="text" id="repay-notes" placeholder="e.g. Monthly installment cleared via teller">
             </div>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn-secondary modal-cancel-btn">Cancel</button>
-          <button type="submit" class="btn-primary">Confirm & Issue Receipt</button>
+          <button type="submit" class="btn-primary">Record Payment</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- 4. LOAN DETAILS & SCHEDULE MODAL -->
+  <!-- 4. LOAN DETAILS MODAL -->
   <div class="modal-overlay" id="modal-loan-details">
-    <div class="modal-container lg">
+    <div class="modal-container" style="max-width:800px;">
       <div class="modal-header">
         <div class="modal-title-box">
-          <h3>Loan Lifecycle & Amortization Schedule</h3>
-          <p>Complete payment breakdown & status</p>
+          <h3 id="modal-loan-title">Facility Details</h3>
+          <p>Full facility amortization schedule and credit audit</p>
         </div>
         <button class="modal-close-btn">&times;</button>
       </div>
-      <div class="modal-body" id="loan-details-modal-content">
-        <!-- Content injected dynamically -->
+      <div class="modal-body">
+        <div style="padding:20px 24px; border-bottom:1px solid var(--border-hairline); display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; font-size:12px;" class="font-tabular">
+          <div><span style="color:var(--text-muted);">Borrower:</span> <strong id="modal-loan-borrower" style="display:block; font-size:13px; color:var(--text-primary);">-</strong></div>
+          <div><span style="color:var(--text-muted);">Product:</span> <strong id="modal-loan-product" style="display:block; font-size:13px; color:var(--text-primary);">-</strong></div>
+          <div><span style="color:var(--text-muted);">Principal:</span> <strong id="modal-loan-principal" style="display:block; font-size:13px; color:var(--text-primary);">-</strong></div>
+          <div><span style="color:var(--text-muted);">Outstanding:</span> <strong id="modal-loan-balance" style="display:block; font-size:13px; color:var(--accent-crimson);">-</strong></div>
+        </div>
+        <div class="table-responsive" style="max-height:360px;">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Inst #</th>
+                <th>Due Date</th>
+                <th class="num-header">Principal</th>
+                <th class="num-header">Interest</th>
+                <th class="num-header">Total Due</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="modal-loan-schedule-body"></tbody>
+          </table>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-secondary modal-cancel-btn">Close</button>
@@ -665,51 +622,7 @@
     </div>
   </div>
 
-  <!-- 5. PRINTABLE RECEIPT MODAL -->
-  <div class="modal-overlay" id="modal-print-receipt">
-    <div class="modal-container lg">
-      <div class="modal-header">
-        <div class="modal-title-box">
-          <h3>Payment Receipt Viewer</h3>
-          <p>Printable receipt document layout</p>
-        </div>
-        <button class="modal-close-btn">&times;</button>
-      </div>
-      <div class="modal-body" id="printable-receipt-content">
-        <!-- Injected dynamically -->
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-secondary modal-cancel-btn">Close</button>
-        <button type="button" class="btn-primary" onclick="triggerPrint()">
-          <i class="ri-printer-line"></i> Print Receipt
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 6. PRINTABLE BORROWER STATEMENT MODAL -->
-  <div class="modal-overlay" id="modal-print-statement">
-    <div class="modal-container lg">
-      <div class="modal-header">
-        <div class="modal-title-box">
-          <h3>Borrower Account Statement</h3>
-          <p>Official client statement for printing</p>
-        </div>
-        <button class="modal-close-btn">&times;</button>
-      </div>
-      <div class="modal-body" id="printable-statement-content">
-        <!-- Injected dynamically -->
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-secondary modal-cancel-btn">Close</button>
-        <button type="button" class="btn-primary" onclick="triggerPrint()">
-          <i class="ri-printer-line"></i> Print Statement
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Scripts -->
+  <!-- Application Controller Scripts -->
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>

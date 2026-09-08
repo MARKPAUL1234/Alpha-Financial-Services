@@ -1,6 +1,5 @@
-// Alpha Financial Services - Main Engine & Application Controller
+// Alpha Financial Services - Production Engine & Controller
 
-// State Store Manager
 let AppStore = {
   data: null,
 
@@ -9,7 +8,6 @@ let AppStore = {
     if (saved) {
       try {
         this.data = JSON.parse(saved);
-        // Force upgrade to UGX dataset if previously stored USD data exists
         if (!this.data.settings || this.data.settings.currency === "USD" || this.data.settings.currencySymbol === "$") {
           this.data = JSON.parse(JSON.stringify(INITIAL_DATA));
           this.save();
@@ -36,14 +34,12 @@ let AppStore = {
   }
 };
 
-// Main Controller
 document.addEventListener("DOMContentLoaded", () => {
   AppStore.init();
   initUI();
   renderCurrentView("dashboard");
 });
 
-// Global Helpers
 function formatCurrency(amount) {
   const symbol = AppStore.data?.settings?.currencySymbol || "UGX";
   const num = parseFloat(amount || 0).toLocaleString("en-US", {
@@ -56,40 +52,21 @@ function formatCurrency(amount) {
 function formatDate(dateStr) {
   if (!dateStr) return "-";
   const d = new Date(dateStr);
-  return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  return d.toLocaleDateString("en-GB", { year: "numeric", month: "short", day: "numeric" });
 }
 
 function showToast(message, type = "info") {
   const toast = document.createElement("div");
   toast.className = `toast-notification ${type}`;
-  toast.style.cssText = `
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: #0B192C;
-    color: white;
-    padding: 14px 20px;
-    border-radius: 8px;
-    border-left: 4px solid ${type === 'success' ? '#10B981' : type === 'danger' ? '#EF4444' : '#0066FF'};
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    z-index: 9999;
-    font-size: 13px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    animation: fadeIn 0.3s ease-out;
-  `;
   toast.innerHTML = `<i class="ri-information-line"></i> ${message}`;
   document.body.appendChild(toast);
   setTimeout(() => {
     toast.style.opacity = "0";
-    toast.style.transition = "opacity 0.3s ease";
-    setTimeout(() => toast.remove(), 300);
-  }, 3500);
+    toast.style.transition = "opacity 0.25s ease";
+    setTimeout(() => toast.remove(), 250);
+  }, 3200);
 }
 
-// UI Initialization
 function initUI() {
   updateBrandingDOM();
   setupNavigation();
@@ -103,13 +80,11 @@ function updateBrandingDOM() {
   const s = AppStore.data.settings;
   const user = AppStore.data.currentUser;
 
-  // Header branding
   document.querySelectorAll(".brand-title-box h1").forEach(el => el.textContent = s.businessName);
   document.querySelectorAll(".brand-title-box span").forEach(el => el.textContent = s.logoText);
   document.querySelectorAll(".currency-code-display").forEach(el => el.textContent = s.currency);
   document.querySelectorAll(".currency-symbol-display").forEach(el => el.textContent = s.currencySymbol);
 
-  // User Profile
   const avatar = document.getElementById("user-avatar-display");
   if (avatar) avatar.textContent = user.avatar;
   const uname = document.getElementById("user-name-display");
@@ -143,30 +118,27 @@ function setupRoleSwitcher() {
     AppStore.data.currentUser.role = next;
     AppStore.save();
     updateBrandingDOM();
-    showToast(`Switched active user role to ${next}`, "info");
+    showToast(`Switched active operator role to ${next}`, "info");
     const activeView = document.querySelector(".sidebar-nav .nav-item.active")?.getAttribute("data-view") || "dashboard";
     renderCurrentView(activeView);
   });
 }
 
-// Render Router
 function renderCurrentView(viewName) {
-  // Hide all sections
   document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
   
   const targetSec = document.getElementById(`view-${viewName}`);
   if (targetSec) targetSec.classList.add("active");
 
-  // Update Page Title
   const titles = {
-    dashboard: { title: "Executive Dashboard", sub: "Real-time loan portfolio performance & metrics" },
-    borrowers: { title: "Borrowers Directory", sub: "Manage client records, search profiles & statements" },
-    loans: { title: "Loan Application Pipeline", sub: "Origination, approvals, disbursements & statuses" },
-    repayments: { title: "Repayments & Schedules", sub: "Record payments, view amortization & receipts" },
-    arrears: { title: "Overdue & Arrears Tracking", sub: "Delinquent portfolio management & collection alerts" },
-    products: { title: "Loan Types & Configuration", sub: "Configure interest rates, terms & credit products" },
-    reports: { title: "Financial & Portfolio Reports", sub: "Comprehensive performance analysis & exports" },
-    settings: { title: "Client Branding & Settings", sub: "Customize organization details & currency settings" }
+    dashboard: { title: "Portfolio Performance & Exposure", sub: "Institutional credit analytics & real-time capital allocation" },
+    borrowers: { title: "Borrower Master Registry", sub: "Client profiles, TIN/NIN records & CRB risk ratings" },
+    loans: { title: "Credit Origination Pipeline", sub: "Facility applications, underwriting review & disbursement" },
+    repayments: { title: "Disbursement & Amortization Ledger", sub: "Repayment collection records & schedule audits" },
+    arrears: { title: "Non-Performing Assets & Arrears", sub: "Delinquency management, penalty accruals & collection risk" },
+    products: { title: "Credit Facility Products & Rates", sub: "Configure loan structures, interest matrices & processing fees" },
+    reports: { title: "Portfolio Yield & Exposure Analytics", sub: "Financial statement summaries & audit exports" },
+    settings: { title: "Institution Parameters & Configuration", sub: "Organization branding, legal identity & currency options" }
   };
 
   if (titles[viewName]) {
@@ -174,7 +146,6 @@ function renderCurrentView(viewName) {
     document.getElementById("page-subtitle-text").textContent = titles[viewName].sub;
   }
 
-  // View specific renders
   switch (viewName) {
     case "dashboard": renderDashboardView(); break;
     case "borrowers": renderBorrowersView(); break;
@@ -187,17 +158,11 @@ function renderCurrentView(viewName) {
   }
 }
 
-/* ==========================================================================
-   VIEW RENDERING FUNCTIONS
-   ========================================================================== */
-
-// 1. DASHBOARD VIEW
 function renderDashboardView() {
   const loans = AppStore.data.loans;
   const repayments = AppStore.data.repayments;
   const borrowers = AppStore.data.borrowers;
 
-  // Calc Metrics
   let totalPortfolio = 0;
   let activeCount = 0;
   let totalCollected = 0;
@@ -208,7 +173,6 @@ function renderDashboardView() {
       totalPortfolio += parseFloat(l.principalAmount || 0);
       if (l.status === "Active" || l.status === "Overdue") activeCount++;
     }
-    // calculate arrears from schedules
     if (l.schedule) {
       l.schedule.forEach(inst => {
         if (inst.status === "Overdue") {
@@ -226,43 +190,40 @@ function renderDashboardView() {
   document.getElementById("kpi-arrears").textContent = formatCurrency(totalArrears);
   document.getElementById("kpi-borrowers").textContent = borrowers.length;
 
-  // Render Recent Transactions
   const recentTable = document.getElementById("dashboard-recent-table");
   if (recentTable) {
     const recent = repayments.slice(-5).reverse();
     recentTable.innerHTML = recent.length === 0 ? 
-      `<tr><td colspan="5" style="text-align:center; color:#888;">No recent repayments recorded.</td></tr>` :
+      `<tr><td colspan="5"><div class="table-empty-state"><i class="ri-history-line"></i><h4>No Recent Ledger Entries</h4><p>Repayments will appear here once recorded.</p></div></td></tr>` :
       recent.map(r => `
         <tr>
-          <td><strong>${r.receiptNo}</strong></td>
+          <td><strong class="receipt-no">${r.receiptNo}</strong></td>
           <td>${r.borrowerName}</td>
           <td>${formatDate(r.paymentDate)}</td>
-          <td><strong style="color:#059669;">${formatCurrency(r.amountPaid)}</strong></td>
+          <td class="font-tabular"><strong style="color:var(--accent-emerald);">${formatCurrency(r.amountPaid)}</strong></td>
           <td><span class="status-badge active">${r.paymentMethod}</span></td>
         </tr>
       `).join('');
   }
 
-  // Render Overdue Alerts Widget
   const alertsContainer = document.getElementById("dashboard-alerts-widget");
   if (alertsContainer) {
     const overdueLoans = loans.filter(l => l.status === "Overdue");
     if (overdueLoans.length === 0) {
-      alertsContainer.innerHTML = `<div style="padding:12px; color:#10B981; font-weight:600;"><i class="ri-checkbox-circle-line"></i> All loans are currently up to date!</div>`;
+      alertsContainer.innerHTML = `<div style="padding:14px; color:var(--accent-emerald); font-size:12px; font-weight:700;"><i class="ri-checkbox-circle-line"></i> All portfolio credit facilities are currently performing.</div>`;
     } else {
       alertsContainer.innerHTML = overdueLoans.map(l => `
         <div class="ai-recommendation-item" onclick="openLoanDetailsModal('${l.id}')">
-          <i class="ri-error-warning-line" style="color:#EF4444;"></i>
+          <i class="ri-error-warning-line" style="color:var(--accent-crimson);"></i>
           <div>
             <strong>${l.borrowerName} (${l.id})</strong>
-            <p style="font-size:11px; opacity:0.8;">Balance: ${formatCurrency(l.remainingBalance)} - Action required</p>
+            <p style="font-size:11px; opacity:0.8;">Outstanding: ${formatCurrency(l.remainingBalance)} - Immediate review required</p>
           </div>
         </div>
       `).join('');
     }
   }
 
-  // Render Portfolio Charts
   renderDashboardCharts();
 }
 
@@ -270,7 +231,6 @@ function renderDashboardCharts() {
   const chartCanvas = document.getElementById("chart-portfolio-mix");
   if (!chartCanvas) return;
 
-  // Render CSS-based visual representation of chart
   const products = AppStore.data.loanProducts;
   const loans = AppStore.data.loans;
 
@@ -284,8 +244,8 @@ function renderDashboardCharts() {
 
   const total = Object.values(productCounts).reduce((a, b) => a + b, 0) || 1;
 
-  let html = `<div style="display:flex; flex-direction:column; gap:12px; margin-top:10px;">`;
-  const colors = ["#0066FF", "#10B981", "#F59E0B", "#8B5CF6"];
+  let html = `<div style="display:flex; flex-direction:column; gap:12px; margin-top:6px;">`;
+  const colors = ["#091322", "#047857", "#B45309", "#1D4ED8"];
   let i = 0;
   for (const [pname, val] of Object.entries(productCounts)) {
     const pct = Math.round((val / total) * 100);
@@ -294,10 +254,10 @@ function renderDashboardCharts() {
       <div>
         <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:4px;">
           <span>${pname}</span>
-          <span>${formatCurrency(val)} (${pct}%)</span>
+          <span class="font-tabular">${formatCurrency(val)} (${pct}%)</span>
         </div>
-        <div style="height:10px; background:#E2E8F0; border-radius:6px; overflow:hidden;">
-          <div style="width:${pct}%; height:100%; background:${col}; border-radius:6px;"></div>
+        <div style="height:8px; background:var(--surface-subtle); border-radius:4px; overflow:hidden;">
+          <div style="width:${pct}%; height:100%; background:${col}; border-radius:4px;"></div>
         </div>
       </div>
     `;
@@ -307,7 +267,6 @@ function renderDashboardCharts() {
   chartCanvas.innerHTML = html;
 }
 
-// 2. BORROWERS VIEW
 function renderBorrowersView() {
   const container = document.getElementById("borrowers-table-body");
   if (!container) return;
@@ -322,33 +281,33 @@ function renderBorrowersView() {
   );
 
   container.innerHTML = list.length === 0 ?
-    `<tr><td colspan="7" style="text-align:center; color:#888;">No matching borrowers found.</td></tr>` :
+    `<tr><td colspan="7"><div class="table-empty-state"><i class="ri-user-search-line"></i><h4>No Borrowers Matching Criteria</h4><p>Verify search parameters or register a new borrower profile.</p></div></td></tr>` :
     list.map(b => {
       const activeLoansCount = AppStore.data.loans.filter(l => l.borrowerId === b.id && l.status === 'Active').length;
       return `
         <tr>
-          <td><strong>${b.id}</strong></td>
+          <td><strong class="id-code">${b.id}</strong></td>
           <td>
-            <div style="font-weight:700; color:var(--bg-primary);">${b.firstName} ${b.lastName}</div>
-            <div style="font-size:11px; color:#64748B;">NIN: ${b.nin}</div>
+            <div style="font-weight:700; color:var(--text-primary);">${b.firstName} ${b.lastName}</div>
+            <div style="font-size:11px; color:var(--text-muted);">NIN: ${b.nin}</div>
           </td>
           <td>
             <div>${b.phone}</div>
-            <div style="font-size:11px; color:#64748B;">${b.email}</div>
+            <div style="font-size:11px; color:var(--text-muted);">${b.email}</div>
           </td>
           <td>${b.employment}</td>
           <td>
             <span class="status-badge ${b.creditScore >= 700 ? 'active' : b.creditScore >= 600 ? 'pending' : 'overdue'}">
-              Score: ${b.creditScore}
+              CRB Score: ${b.creditScore}
             </span>
           </td>
-          <td><strong>${activeLoansCount} Active</strong></td>
+          <td><strong>${activeLoansCount} Active Facilities</strong></td>
           <td>
             <div class="action-btn-group">
-              <button class="action-icon" title="View Profile & Statement" onclick="openBorrowerProfileModal('${b.id}')">
+              <button class="action-icon" title="View Master Statement" onclick="openBorrowerProfileModal('${b.id}')">
                 <i class="ri-file-text-line"></i>
               </button>
-              <button class="action-icon" title="Apply for Loan" onclick="openNewLoanModalWithBorrower('${b.id}')">
+              <button class="action-icon" title="New Facility Application" onclick="openNewLoanModalWithBorrower('${b.id}')">
                 <i class="ri-add-circle-line"></i>
               </button>
             </div>
@@ -358,7 +317,6 @@ function renderBorrowersView() {
     }).join('');
 }
 
-// 3. LOANS APPLICATION PIPELINE VIEW
 function renderLoansView() {
   const container = document.getElementById("loans-table-body");
   if (!container) return;
@@ -380,39 +338,39 @@ function renderLoansView() {
   }
 
   container.innerHTML = list.length === 0 ?
-    `<tr><td colspan="8" style="text-align:center; color:#888;">No loans found matching filter criteria.</td></tr>` :
+    `<tr><td colspan="8"><div class="table-empty-state"><i class="ri-folder-open-line"></i><h4>No Credit Applications Found</h4><p>No active or historical facilities match the current status filter.</p></div></td></tr>` :
     list.map(l => `
       <tr>
-        <td><strong>${l.id}</strong></td>
+        <td><strong class="id-code">${l.id}</strong></td>
         <td>
           <div style="font-weight:700;">${l.borrowerName}</div>
-          <div style="font-size:11px; color:#64748B;">ID: ${l.borrowerId}</div>
+          <div style="font-size:11px; color:var(--text-muted);">Ref: ${l.borrowerId}</div>
         </td>
         <td>${l.productName}</td>
-        <td><strong>${formatCurrency(l.principalAmount)}</strong></td>
-        <td>${l.interestRate}% (${l.termMonths} Mths)</td>
+        <td class="font-tabular"><strong>${formatCurrency(l.principalAmount)}</strong></td>
+        <td class="font-tabular">${l.interestRate}% (${l.termMonths} Mths)</td>
         <td>
           <span class="status-badge ${l.status.toLowerCase().replace(' ', '-')}">
             ${l.status}
           </span>
         </td>
-        <td><strong>${formatCurrency(l.remainingBalance)}</strong></td>
+        <td class="font-tabular"><strong>${formatCurrency(l.remainingBalance)}</strong></td>
         <td>
           <div class="action-btn-group">
             <button class="action-icon" title="View Schedule & Lifecycle" onclick="openLoanDetailsModal('${l.id}')">
               <i class="ri-eye-line"></i>
             </button>
             ${l.status === 'Pending Approval' ? `
-              <button class="action-icon" style="color:#059669;" title="Approve Loan" onclick="changeLoanStatus('${l.id}', 'Approved')">
+              <button class="action-icon" style="color:var(--accent-emerald);" title="Approve Facility" onclick="changeLoanStatus('${l.id}', 'Approved')">
                 <i class="ri-check-line"></i>
               </button>
-              <button class="action-icon" style="color:#DC2626;" title="Deny Loan" onclick="changeLoanStatus('${l.id}', 'Denied')">
+              <button class="action-icon" style="color:var(--accent-crimson);" title="Decline Facility" onclick="changeLoanStatus('${l.id}', 'Denied')">
                 <i class="ri-close-line"></i>
               </button>
             ` : ''}
             ${l.status === 'Approved' ? `
-              <button class="action-icon" style="color:#0066FF;" title="Release / Disburse Funds" onclick="disburseLoanModal('${l.id}')">
-                <i class="ri-hand-coin-line"></i>
+              <button class="action-icon" style="color:var(--accent-navy);" title="Disburse Capital" onclick="disburseLoanModal('${l.id}')">
+                <i class="ri-send-plane-line"></i>
               </button>
             ` : ''}
           </div>
@@ -421,120 +379,92 @@ function renderLoansView() {
     `).join('');
 }
 
-// 4. REPAYMENTS VIEW
 function renderRepaymentsView() {
   const container = document.getElementById("repayments-table-body");
   if (!container) return;
 
-  const list = AppStore.data.repayments;
+  const query = (document.getElementById("repayment-search-input")?.value || "").toLowerCase();
+  const list = AppStore.data.repayments.filter(r => 
+    r.receiptNo.toLowerCase().includes(query) ||
+    r.borrowerName.toLowerCase().includes(query) ||
+    r.loanId.toLowerCase().includes(query) ||
+    r.referenceNo.toLowerCase().includes(query)
+  );
+
   container.innerHTML = list.length === 0 ?
-    `<tr><td colspan="7" style="text-align:center; color:#888;">No repayments recorded yet.</td></tr>` :
+    `<tr><td colspan="7"><div class="table-empty-state"><i class="ri-refund-2-line"></i><h4>No Repayment Receipts Found</h4><p>Try searching by receipt reference or borrower name.</p></div></td></tr>` :
     list.map(r => `
       <tr>
-        <td><strong>${r.receiptNo}</strong></td>
-        <td>${r.loanId}</td>
+        <td><strong class="receipt-no">${r.receiptNo}</strong></td>
+        <td><strong class="id-code">${r.loanId}</strong></td>
         <td><strong>${r.borrowerName}</strong></td>
         <td>${formatDate(r.paymentDate)}</td>
-        <td><strong style="color:#059669;">${formatCurrency(r.amountPaid)}</strong></td>
-        <td>${r.paymentMethod} (${r.referenceNo || 'N/A'})</td>
+        <td class="font-tabular"><strong style="color:var(--accent-emerald);">${formatCurrency(r.amountPaid)}</strong></td>
+        <td><span class="status-badge active">${r.paymentMethod}</span></td>
         <td>
-          <button class="btn-secondary btn-sm" onclick="printReceiptModal('${r.receiptNo}')">
-            <i class="ri-printer-line"></i> Receipt
+          <button class="action-icon" title="Print Official Receipt" onclick="printReceiptModal('${r.receiptNo}')">
+            <i class="ri-printer-line"></i>
           </button>
         </td>
       </tr>
     `).join('');
 }
 
-// 5. ARREARS & OVERDUE VIEW
 function renderArrearsView() {
   const container = document.getElementById("arrears-table-body");
   if (!container) return;
 
-  const overdueInstallments = [];
-  AppStore.data.loans.forEach(l => {
-    if (l.schedule) {
-      l.schedule.forEach(inst => {
-        if (inst.status === "Overdue") {
-          const dueDateObj = new Date(inst.dueDate);
-          const today = new Date("2026-09-07");
-          const diffDays = Math.max(1, Math.floor((today - dueDateObj) / (1000 * 60 * 60 * 24)));
-          overdueInstallments.push({
-            loanId: l.id,
-            borrowerName: l.borrowerName,
-            borrowerId: l.borrowerId,
-            installmentNo: inst.installmentNo,
-            dueDate: inst.dueDate,
-            daysOverdue: diffDays,
-            amountDue: inst.total,
-            penalty: inst.penalty || (inst.total * 0.05)
-          });
-        }
-      });
-    }
-  });
+  const overdueLoans = AppStore.data.loans.filter(l => l.status === "Overdue");
+  document.getElementById("overdue-badge-count").textContent = overdueLoans.length;
 
-  container.innerHTML = overdueInstallments.length === 0 ?
-    `<tr><td colspan="7" style="text-align:center; color:#10B981; font-weight:700;">No accounts in arrears! Portfolio performance is excellent.</td></tr>` :
-    overdueInstallments.map(a => `
-      <tr>
-        <td><strong>${a.loanId}</strong></td>
-        <td><strong>${a.borrowerName}</strong></td>
-        <td>Inst. #${a.installmentNo} (${formatDate(a.dueDate)})</td>
-        <td><span class="status-badge overdue">${a.daysOverdue} Days Past Due</span></td>
-        <td>${formatCurrency(a.amountDue)}</td>
-        <td><strong style="color:#DC2626;">+${formatCurrency(a.penalty)}</strong></td>
-        <td>
-          <button class="btn-accent btn-sm" onclick="showToast('Reminder Notice sent to borrower ${a.borrowerName}', 'success')">
-            <i class="ri-notification-line"></i> Remind
-          </button>
-          <button class="btn-primary btn-sm" onclick="openRecordRepaymentModalForLoan('${a.loanId}')">
-            Pay Now
-          </button>
-        </td>
-      </tr>
-    `).join('');
+  container.innerHTML = overdueLoans.length === 0 ?
+    `<tr><td colspan="7"><div class="table-empty-state"><i class="ri-shield-check-line"></i><h4>Zero Delinquent Facilities</h4><p>All active loans are fully up to date with repayment schedules.</p></div></td></tr>` :
+    overdueLoans.map(l => {
+      const overdueInstallment = l.schedule?.find(s => s.status === "Overdue");
+      const penalty = overdueInstallment?.penalty || 0;
+      const totalDue = (overdueInstallment?.total || 0) + penalty;
+      return `
+        <tr>
+          <td><strong class="id-code">${l.id}</strong></td>
+          <td><strong>${l.borrowerName}</strong></td>
+          <td>${l.productName}</td>
+          <td class="font-tabular" style="color:var(--accent-crimson); font-weight:700;">${overdueInstallment?.dueDate ? formatDate(overdueInstallment.dueDate) : 'Overdue'}</td>
+          <td class="font-tabular">${formatCurrency(penalty)}</td>
+          <td class="font-tabular"><strong style="color:var(--accent-crimson);">${formatCurrency(totalDue)}</strong></td>
+          <td>
+            <div class="action-btn-group">
+              <button class="btn-secondary btn-sm" onclick="openRecordRepaymentForLoan('${l.id}')">Record Pay</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
 }
 
-// 6. LOAN PRODUCTS CONFIGURATION VIEW
 function renderProductsView() {
-  const container = document.getElementById("products-cards-grid");
+  const container = document.getElementById("products-grid-container");
   if (!container) return;
 
-  const products = AppStore.data.loanProducts;
-  container.innerHTML = products.map(p => `
-    <div class="card" style="margin-bottom:0;">
-      <div class="card-header">
-        <div class="card-title-box">
-          <h3>${p.name}</h3>
-          <p>Product ID: ${p.id}</p>
+  container.innerHTML = AppStore.data.loanProducts.map(p => `
+    <div class="card" style="padding:20px; display:flex; flex-direction:column; justify-content:space-between;">
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+          <span class="status-badge active">${p.id}</span>
+          <span style="font-size:12px; font-weight:800; color:var(--accent-navy);">${p.interestRate}% P.A.</span>
         </div>
-        <span class="status-badge active">${p.interestType}</span>
+        <h4 style="font-size:16px; font-weight:800; color:var(--text-primary); margin-bottom:6px;">${p.name}</h4>
+        <p style="font-size:12px; color:var(--text-muted); line-height:1.4; margin-bottom:16px;">${p.description}</p>
       </div>
-      <p style="font-size:13px; color:#475569; margin-bottom:16px;">${p.description}</p>
-      <div style="background:#F8FAFC; padding:14px; border-radius:8px; display:flex; flex-direction:column; gap:8px; font-size:13px;">
-        <div style="display:flex; justify-style:space-between; justify-content:space-between;">
-          <span style="color:#64748B;">Interest Rate:</span>
-          <strong>${p.interestRate}% P.A.</strong>
-        </div>
-        <div style="display:flex; justify-content:space-between;">
-          <span style="color:#64748B;">Max Loan Limit:</span>
-          <strong>${formatCurrency(p.maxAmount)}</strong>
-        </div>
-        <div style="display:flex; justify-content:space-between;">
-          <span style="color:#64748B;">Processing Fee:</span>
-          <strong>${p.processingFeePercent}%</strong>
-        </div>
-        <div style="display:flex; justify-content:space-between;">
-          <span style="color:#64748B;">Late Penalty:</span>
-          <strong>${p.penaltyRate}%</strong>
+      <div>
+        <div style="border-top:1px solid var(--border-hairline); padding-top:12px; display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;" class="font-tabular">
+          <div><span style="color:var(--text-muted);">Range:</span> <strong style="display:block;">${formatCurrency(p.minAmount)} - ${formatCurrency(p.maxAmount)}</strong></div>
+          <div><span style="color:var(--text-muted);">Max Tenure:</span> <strong style="display:block;">${p.termMonths} Months</strong></div>
         </div>
       </div>
     </div>
   `).join('');
 }
 
-// 7. REPORTS VIEW
 function renderReportsView() {
   const loans = AppStore.data.loans;
   const repayments = AppStore.data.repayments;
@@ -543,7 +473,7 @@ function renderReportsView() {
   let totalInterestEarned = 0;
 
   loans.forEach(l => {
-    if (l.status === 'Active' || l.status === 'Completed' || l.status === 'Overdue') {
+    if (l.status === "Active" || l.status === "Completed" || l.status === "Overdue") {
       totalDisbursed += parseFloat(l.principalAmount || 0);
     }
   });
@@ -557,7 +487,6 @@ function renderReportsView() {
   document.getElementById("report-repayment-rate").textContent = "94.2%";
 }
 
-// 8. SETTINGS VIEW
 function renderSettingsView() {
   const s = AppStore.data.settings;
   document.getElementById("setting-biz-name").value = s.businessName || "";
@@ -587,13 +516,10 @@ function setupSettingsForm() {
     
     AppStore.save();
     updateBrandingDOM();
-    showToast("Branding & Organization settings saved successfully!", "success");
+    showToast("Institution parameters saved successfully!", "success");
   });
 }
 
-/* ==========================================================================
-   CALCULATOR ENGINE & SCHEDULE GENERATOR
-   ========================================================================== */
 function calculateAmortization(principal, annualRate, months, interestType = "Flat Rate") {
   principal = parseFloat(principal || 0);
   annualRate = parseFloat(annualRate || 0);
@@ -604,19 +530,17 @@ function calculateAmortization(principal, annualRate, months, interestType = "Fl
 
   if (interestType === "Flat Rate") {
     totalInterest = principal * (annualRate / 100) * (months / 12);
+    const totalRepayable = principal + totalInterest;
+    const monthlyTotal = totalRepayable / months;
     const monthlyPrincipal = principal / months;
     const monthlyInterest = totalInterest / months;
-    const monthlyTotal = monthlyPrincipal + monthlyInterest;
 
-    let startDate = new Date();
-
+    let currentDate = new Date();
     for (let i = 1; i <= months; i++) {
-      startDate.setMonth(startDate.getMonth() + 1);
-      const dateStr = startDate.toISOString().split("T")[0];
-
+      currentDate.setMonth(currentDate.getMonth() + 1);
       schedule.push({
         installmentNo: i,
-        dueDate: dateStr,
+        dueDate: currentDate.toISOString().split('T')[0],
         principal: parseFloat(monthlyPrincipal.toFixed(2)),
         interest: parseFloat(monthlyInterest.toFixed(2)),
         total: parseFloat(monthlyTotal.toFixed(2)),
@@ -625,46 +549,69 @@ function calculateAmortization(principal, annualRate, months, interestType = "Fl
         paidDate: null
       });
     }
+    return { totalInterest, totalRepayable, monthlyInstallment: monthlyTotal, schedule };
   } else {
-    // Reducing Balance Formula
-    const r = (annualRate / 100) / 12;
-    const emi = (r === 0) ? (principal / months) : (principal * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
-    
-    let remaining = principal;
-    let startDate = new Date();
+    const monthlyRate = (annualRate / 100) / 12;
+    const monthlyInstallment = (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
+    let balance = principal;
+    let currentDate = new Date();
 
     for (let i = 1; i <= months; i++) {
-      startDate.setMonth(startDate.getMonth() + 1);
-      const dateStr = startDate.toISOString().split("T")[0];
-
-      const interestForMonth = remaining * r;
-      const principalForMonth = emi - interestForMonth;
-      remaining -= principalForMonth;
-      totalInterest += interestForMonth;
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      const interestPayment = balance * monthlyRate;
+      const principalPayment = monthlyInstallment - interestPayment;
+      balance -= principalPayment;
+      totalInterest += interestPayment;
 
       schedule.push({
         installmentNo: i,
-        dueDate: dateStr,
-        principal: parseFloat(principalForMonth.toFixed(2)),
-        interest: parseFloat(interestForMonth.toFixed(2)),
-        total: parseFloat(emi.toFixed(2)),
+        dueDate: currentDate.toISOString().split('T')[0],
+        principal: parseFloat(principalPayment.toFixed(2)),
+        interest: parseFloat(interestPayment.toFixed(2)),
+        total: parseFloat(monthlyInstallment.toFixed(2)),
         paidAmount: 0,
         status: "Pending",
         paidDate: null
       });
     }
+    return { totalInterest, totalRepayable: principal + totalInterest, monthlyInstallment, schedule };
   }
-
-  return {
-    totalRepayable: parseFloat((principal + totalInterest).toFixed(2)),
-    totalInterest: parseFloat(totalInterest.toFixed(2)),
-    schedule: schedule
-  };
 }
 
-/* ==========================================================================
-   MODALS & ACTIONS IMPLEMENTATION
-   ========================================================================== */
+function setupCalculators() {
+  const pInput = document.getElementById("loan-principal");
+  const rInput = document.getElementById("loan-rate");
+  const mInput = document.getElementById("loan-months");
+  const prodSelect = document.getElementById("loan-product-select");
+
+  const updateCalc = () => {
+    if (!pInput || !rInput || !mInput) return;
+    const p = parseFloat(pInput.value || 0);
+    const r = parseFloat(rInput.value || 0);
+    const m = parseInt(mInput.value || 1);
+    
+    let interestType = "Flat Rate";
+    if (prodSelect) {
+      const selectedProd = AppStore.data.loanProducts.find(x => x.id === prodSelect.value);
+      if (selectedProd) interestType = selectedProd.interestType;
+    }
+
+    const calc = calculateAmortization(p, r, m, interestType);
+    
+    const elInterest = document.getElementById("calc-preview-interest");
+    const elMonthly = document.getElementById("calc-preview-monthly");
+    const elTotal = document.getElementById("calc-preview-total");
+
+    if (elInterest) elInterest.textContent = formatCurrency(calc.totalInterest);
+    if (elMonthly) elMonthly.textContent = formatCurrency(calc.monthlyInstallment);
+    if (elTotal) elTotal.textContent = formatCurrency(calc.totalRepayable);
+  };
+
+  [pInput, rInput, mInput, prodSelect].forEach(el => {
+    if (el) el.addEventListener("input", updateCalc);
+  });
+}
+
 function setupModals() {
   document.querySelectorAll(".modal-close-btn, .modal-cancel-btn").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -672,84 +619,83 @@ function setupModals() {
     });
   });
 
-  // Borrower form submit
-  const borrowerForm = document.getElementById("form-add-borrower");
-  if (borrowerForm) {
-    borrowerForm.addEventListener("submit", (e) => {
+  const newLoanForm = document.getElementById("form-new-loan");
+  if (newLoanForm) {
+    newLoanForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      const newB = {
-        id: "BOR-" + (1000 + AppStore.data.borrowers.length + 1),
-        firstName: document.getElementById("bor-fname").value,
-        lastName: document.getElementById("bor-lname").value,
-        nin: document.getElementById("bor-nin").value,
-        phone: document.getElementById("bor-phone").value,
-        email: document.getElementById("bor-email").value,
-        address: document.getElementById("bor-address").value,
-        employment: document.getElementById("bor-emp").value,
-        monthlyIncome: parseFloat(document.getElementById("bor-income").value || 0),
-        creditScore: Math.floor(Math.random() * (850 - 600) + 600),
-        status: "Active",
-        registeredDate: new Date().toISOString().split("T")[0]
-      };
+      const borrowerId = document.getElementById("loan-borrower-select").value;
+      const productId = document.getElementById("loan-product-select").value;
+      const principal = parseFloat(document.getElementById("loan-principal").value);
+      const interestRate = parseFloat(document.getElementById("loan-rate").value);
+      const termMonths = parseInt(document.getElementById("loan-months").value);
+      const collateral = document.getElementById("loan-collateral").value;
 
-      AppStore.data.borrowers.push(newB);
-      AppStore.save();
-      document.getElementById("modal-add-borrower").classList.remove("active");
-      borrowerForm.reset();
-      showToast(`Borrower ${newB.firstName} ${newB.lastName} registered successfully!`, "success");
-      renderBorrowersView();
-    });
-  }
+      const borrower = AppStore.data.borrowers.find(b => b.id === borrowerId);
+      const product = AppStore.data.loanProducts.find(p => p.id === productId);
 
-  // Loan application form submit
-  const loanForm = document.getElementById("form-add-loan");
-  if (loanForm) {
-    loanForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const borrowerSelect = document.getElementById("loan-bor-select");
-      const productSelect = document.getElementById("loan-prod-select");
-      const amount = parseFloat(document.getElementById("loan-amount").value);
-      const months = parseInt(document.getElementById("loan-months").value);
-
-      const bor = AppStore.data.borrowers.find(b => b.id === borrowerSelect.value);
-      const prod = AppStore.data.loanProducts.find(p => p.id === productSelect.value);
-
-      if (!bor || !prod) return;
-
-      const calc = calculateAmortization(amount, prod.interestRate, months, prod.interestType);
+      const calc = calculateAmortization(principal, interestRate, termMonths, product?.interestType || "Flat Rate");
 
       const newLoan = {
-        id: "LN-2026-0" + (AppStore.data.loans.length + 1),
-        borrowerId: bor.id,
-        borrowerName: `${bor.firstName} ${bor.lastName}`,
-        productId: prod.id,
-        productName: prod.name,
-        principalAmount: amount,
-        interestRate: prod.interestRate,
-        termMonths: months,
+        id: `LN-2026-00${AppStore.data.loans.length + 1}`,
+        borrowerId,
+        borrowerName: `${borrower?.firstName} ${borrower?.lastName}`,
+        productId,
+        productName: product?.name || "Standard Facility",
+        principalAmount: principal,
+        interestRate,
+        termMonths,
         repaymentFrequency: "Monthly",
-        applicationDate: new Date().toISOString().split("T")[0],
+        applicationDate: new Date().toISOString().split('T')[0],
         approvalDate: null,
         releaseDate: null,
         status: "Pending Approval",
         disbursedBy: "-",
-        collateral: document.getElementById("loan-collateral").value || "General Agreement Pledge",
+        collateral,
         totalRepayable: calc.totalRepayable,
         totalPaid: 0,
         remainingBalance: calc.totalRepayable,
         schedule: calc.schedule
       };
 
-      AppStore.data.loans.push(newLoan);
+      AppStore.data.loans.unshift(newLoan);
       AppStore.save();
-      document.getElementById("modal-add-loan").classList.remove("active");
-      loanForm.reset();
-      showToast(`Loan application ${newLoan.id} submitted for approval!`, "success");
-      renderLoansView();
+
+      document.querySelectorAll(".modal-overlay").forEach(m => m.classList.remove("active"));
+      newLoanForm.reset();
+      showToast(`Credit Application ${newLoan.id} submitted for underwriting approval!`, "success");
+      renderCurrentView("loans");
     });
   }
 
-  // Record Repayment form submit
+  const newBorrowerForm = document.getElementById("form-new-borrower");
+  if (newBorrowerForm) {
+    newBorrowerForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const newB = {
+        id: `BOR-${1000 + AppStore.data.borrowers.length + 1}`,
+        firstName: document.getElementById("bor-firstname").value,
+        lastName: document.getElementById("bor-lastname").value,
+        nin: document.getElementById("bor-nin").value,
+        phone: document.getElementById("bor-phone").value,
+        email: document.getElementById("bor-email").value,
+        address: document.getElementById("bor-address").value,
+        employment: document.getElementById("bor-employment").value,
+        monthlyIncome: parseFloat(document.getElementById("bor-income").value || 0),
+        creditScore: 720,
+        status: "Active",
+        registeredDate: new Date().toISOString().split('T')[0]
+      };
+
+      AppStore.data.borrowers.unshift(newB);
+      AppStore.save();
+
+      document.querySelectorAll(".modal-overlay").forEach(m => m.classList.remove("active"));
+      newBorrowerForm.reset();
+      showToast(`Borrower ${newB.firstName} ${newB.lastName} registered successfully!`, "success");
+      renderCurrentView("borrowers");
+    });
+  }
+
   const repayForm = document.getElementById("form-record-repayment");
   if (repayForm) {
     repayForm.addEventListener("submit", (e) => {
@@ -757,117 +703,100 @@ function setupModals() {
       const loanId = document.getElementById("repay-loan-select").value;
       const amountPaid = parseFloat(document.getElementById("repay-amount").value);
       const method = document.getElementById("repay-method").value;
-      const ref = document.getElementById("repay-ref").value;
+      const refNo = document.getElementById("repay-ref").value;
+      const notes = document.getElementById("repay-notes").value;
 
       const loan = AppStore.data.loans.find(l => l.id === loanId);
       if (!loan) return;
 
-      // Find first pending or overdue installment
-      let nextInst = loan.schedule.find(s => s.status === 'Pending' || s.status === 'Overdue');
-      if (nextInst) {
-        nextInst.status = "Paid";
-        nextInst.paidAmount = amountPaid;
-        nextInst.paidDate = new Date().toISOString().split("T")[0];
-      }
+      const receiptNo = `RCP-${8900 + AppStore.data.repayments.length + 1}`;
+      const newRepay = {
+        receiptNo,
+        loanId,
+        borrowerName: loan.borrowerName,
+        paymentDate: new Date().toISOString().split('T')[0],
+        amountPaid,
+        principalPaid: amountPaid * 0.85,
+        interestPaid: amountPaid * 0.15,
+        penaltyPaid: 0,
+        paymentMethod: method,
+        referenceNo: refNo,
+        receivedBy: AppStore.data.currentUser.name,
+        notes
+      };
 
-      loan.totalPaid = parseFloat((loan.totalPaid + amountPaid).toFixed(2));
-      loan.remainingBalance = Math.max(0, parseFloat((loan.totalRepayable - loan.totalPaid).toFixed(2)));
+      loan.totalPaid = (loan.totalPaid || 0) + amountPaid;
+      loan.remainingBalance = Math.max(0, loan.totalRepayable - loan.totalPaid);
 
-      if (loan.remainingBalance === 0) {
+      if (loan.remainingBalance <= 0) {
         loan.status = "Completed";
       }
 
-      const receiptNo = "RCP-" + Math.floor(1000 + Math.random() * 9000);
-      const newRepay = {
-        receiptNo: receiptNo,
-        loanId: loan.id,
-        borrowerName: loan.borrowerName,
-        paymentDate: new Date().toISOString().split("T")[0],
-        amountPaid: amountPaid,
-        principalPaid: nextInst ? nextInst.principal : amountPaid * 0.85,
-        interestPaid: nextInst ? nextInst.interest : amountPaid * 0.15,
-        penaltyPaid: 0,
-        paymentMethod: method,
-        referenceNo: ref,
-        receivedBy: AppStore.data.currentUser.name,
-        notes: "Installment payment recorded via front-end ledger"
-      };
-
-      AppStore.data.repayments.push(newRepay);
+      AppStore.data.repayments.unshift(newRepay);
       AppStore.save();
-      document.getElementById("modal-record-repayment").classList.remove("active");
+
+      document.querySelectorAll(".modal-overlay").forEach(m => m.classList.remove("active"));
       repayForm.reset();
-      
-      showToast(`Repayment ${receiptNo} recorded successfully!`, "success");
-      printReceiptModal(receiptNo);
-      renderRepaymentsView();
+      showToast(`Payment receipt ${receiptNo} issued successfully!`, "success");
+      renderCurrentView("repayments");
     });
   }
 }
 
-function setupCalculators() {
-  const amtInput = document.getElementById("loan-amount");
-  const monthsInput = document.getElementById("loan-months");
-  const prodSelect = document.getElementById("loan-prod-select");
-
-  function updateCalcDisplay() {
-    if (!amtInput || !monthsInput || !prodSelect) return;
-    const amount = parseFloat(amtInput.value || 0);
-    const months = parseInt(monthsInput.value || 1);
-    const prod = AppStore.data.loanProducts.find(p => p.id === prodSelect.value);
-
-    if (!prod || amount <= 0) return;
-
-    const calc = calculateAmortization(amount, prod.interestRate, months, prod.interestType);
-    document.getElementById("calc-preview-interest").textContent = formatCurrency(calc.totalInterest);
-    document.getElementById("calc-preview-total").textContent = formatCurrency(calc.totalRepayable);
-    document.getElementById("calc-preview-monthly").textContent = formatCurrency(calc.schedule[0]?.total || 0);
-  }
-
-  if (amtInput) amtInput.addEventListener("input", updateCalcDisplay);
-  if (monthsInput) monthsInput.addEventListener("input", updateCalcDisplay);
-  if (prodSelect) prodSelect.addEventListener("change", updateCalcDisplay);
-}
-
-// Action Handlers
-function openBorrowerModal() {
-  document.getElementById("modal-add-borrower").classList.add("active");
-}
-
 function openNewLoanModal() {
-  // Populate borrower select dropdown
-  const borSelect = document.getElementById("loan-bor-select");
-  if (borSelect) {
-    borSelect.innerHTML = AppStore.data.borrowers.map(b => `
-      <option value="${b.id}">${b.firstName} ${b.lastName} (${b.id})</option>
-    `).join('');
+  const borrowerSelect = document.getElementById("loan-borrower-select");
+  const productSelect = document.getElementById("loan-product-select");
+
+  if (borrowerSelect) {
+    borrowerSelect.innerHTML = AppStore.data.borrowers.map(b => 
+      `<option value="${b.id}">${b.firstName} ${b.lastName} (NIN: ${b.nin})</option>`
+    ).join('');
   }
 
-  // Populate product select dropdown
-  const prodSelect = document.getElementById("loan-prod-select");
-  if (prodSelect) {
-    prodSelect.innerHTML = AppStore.data.loanProducts.map(p => `
-      <option value="${p.id}">${p.name} - ${p.interestRate}%</option>
-    `).join('');
+  if (productSelect) {
+    productSelect.innerHTML = AppStore.data.loanProducts.map(p => 
+      `<option value="${p.id}">${p.name} (${p.interestRate}%)</option>`
+    ).join('');
   }
 
-  document.getElementById("modal-add-loan").classList.add("active");
+  document.getElementById("modal-new-loan")?.classList.add("active");
 }
 
-function openNewLoanModalWithBorrower(borId) {
+function openNewLoanModalWithBorrower(borrowerId) {
   openNewLoanModal();
-  const borSelect = document.getElementById("loan-bor-select");
-  if (borSelect) borSelect.value = borId;
+  const select = document.getElementById("loan-borrower-select");
+  if (select) select.value = borrowerId;
+}
+
+function openNewBorrowerModal() {
+  document.getElementById("modal-new-borrower")?.classList.add("active");
+}
+
+function openRecordRepaymentModal() {
+  const select = document.getElementById("repay-loan-select");
+  if (select) {
+    const activeLoans = AppStore.data.loans.filter(l => l.status === "Active" || l.status === "Overdue");
+    select.innerHTML = activeLoans.map(l => 
+      `<option value="${l.id}">${l.id} - ${l.borrowerName} (Balance: ${formatCurrency(l.remainingBalance)})</option>`
+    ).join('');
+  }
+  document.getElementById("modal-record-repayment")?.classList.add("active");
+}
+
+function openRecordRepaymentForLoan(loanId) {
+  openRecordRepaymentModal();
+  const select = document.getElementById("repay-loan-select");
+  if (select) select.value = loanId;
 }
 
 function changeLoanStatus(loanId, newStatus) {
   const loan = AppStore.data.loans.find(l => l.id === loanId);
   if (loan) {
     loan.status = newStatus;
-    if (newStatus === 'Approved') loan.approvalDate = new Date().toISOString().split("T")[0];
+    if (newStatus === "Approved") loan.approvalDate = new Date().toISOString().split('T')[0];
     AppStore.save();
-    showToast(`Loan ${loanId} status updated to ${newStatus}`, "success");
-    renderLoansView();
+    showToast(`Credit Application ${loanId} status updated to ${newStatus}`, "info");
+    renderCurrentView("loans");
   }
 }
 
@@ -875,251 +804,52 @@ function disburseLoanModal(loanId) {
   const loan = AppStore.data.loans.find(l => l.id === loanId);
   if (loan) {
     loan.status = "Active";
-    loan.releaseDate = new Date().toISOString().split("T")[0];
+    loan.releaseDate = new Date().toISOString().split('T')[0];
     loan.disbursedBy = AppStore.data.currentUser.name;
     AppStore.save();
-    showToast(`Loan ${loanId} disbursed/released to borrower successfully!`, "success");
-    renderLoansView();
+    showToast(`Capital disbursed successfully for facility ${loanId}!`, "success");
+    renderCurrentView("loans");
   }
 }
 
-function openRecordRepaymentModal() {
-  const select = document.getElementById("repay-loan-select");
-  if (select) {
-    select.innerHTML = AppStore.data.loans
-      .filter(l => l.status === "Active" || l.status === "Overdue")
-      .map(l => `<option value="${l.id}">${l.id} - ${l.borrowerName} (Bal: ${formatCurrency(l.remainingBalance)})</option>`)
-      .join('');
-    
-    // auto update amount
-    select.addEventListener("change", () => {
-      const selectedLoan = AppStore.data.loans.find(l => l.id === select.value);
-      if (selectedLoan && selectedLoan.schedule) {
-        const nextInst = selectedLoan.schedule.find(s => s.status === 'Pending' || s.status === 'Overdue');
-        if (nextInst) {
-          document.getElementById("repay-amount").value = nextInst.total;
-        }
-      }
-    });
-
-    // trigger initial change
-    select.dispatchEvent(new Event("change"));
-  }
-
-  document.getElementById("modal-record-repayment").classList.add("active");
-}
-
-function openRecordRepaymentModalForLoan(loanId) {
-  openRecordRepaymentModal();
-  const select = document.getElementById("repay-loan-select");
-  if (select) {
-    select.value = loanId;
-    select.dispatchEvent(new Event("change"));
-  }
-}
-
-// 9. PRINTABLE RECEIPT MODAL
-function printReceiptModal(receiptNo) {
-  const r = AppStore.data.repayments.find(x => x.receiptNo === receiptNo);
-  if (!r) return;
-
-  const s = AppStore.data.settings;
-  const body = document.getElementById("printable-receipt-content");
-  if (!body) return;
-
-  body.innerHTML = `
-    <div class="printable-document">
-      <div class="print-header">
-        <div class="print-brand">
-          <h2>${s.businessName}</h2>
-          <p>${s.address}</p>
-          <p>Phone: ${s.phone} | Email: ${s.email}</p>
-        </div>
-        <div class="print-title">
-          <h3>PAYMENT RECEIPT</h3>
-          <p>Receipt #: <strong>${r.receiptNo}</strong></p>
-          <p>Date: ${formatDate(r.paymentDate)}</p>
-        </div>
-      </div>
-      <div class="print-details-grid">
-        <div class="print-box">
-          <h4>Received From</h4>
-          <p><strong>Borrower:</strong> ${r.borrowerName}</p>
-          <p><strong>Loan Account:</strong> ${r.loanId}</p>
-        </div>
-        <div class="print-box">
-          <h4>Payment Info</h4>
-          <p><strong>Method:</strong> ${r.paymentMethod}</p>
-          <p><strong>Reference #:</strong> ${r.referenceNo || 'N/A'}</p>
-          <p><strong>Issued By:</strong> ${r.receivedBy}</p>
-        </div>
-      </div>
-      <table class="print-table">
-        <thead>
-          <tr>
-            <th>Description</th>
-            <th style="text-align:right;">Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Loan Principal Breakdown</td>
-            <td style="text-align:right;">${formatCurrency(r.principalPaid)}</td>
-          </tr>
-          <tr>
-            <td>Interest Fee Paid</td>
-            <td style="text-align:right;">${formatCurrency(r.interestPaid)}</td>
-          </tr>
-          ${r.penaltyPaid > 0 ? `
-          <tr>
-            <td>Late Penalty Fee</td>
-            <td style="text-align:right;">${formatCurrency(r.penaltyPaid)}</td>
-          </tr>
-          ` : ''}
-          <tr style="font-weight:bold; background:#F1F5F9;">
-            <td>TOTAL AMOUNT RECEIVED</td>
-            <td style="text-align:right; font-size:14px; color:${s.currencySymbol};">${formatCurrency(r.amountPaid)}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="print-signature-area">
-        <div class="sig-line">Borrower Signature</div>
-        <div class="sig-line">Authorized Officer Signature</div>
-      </div>
-    </div>
-  `;
-
-  document.getElementById("modal-print-receipt").classList.add("active");
-}
-
-// 10. PRINTABLE BORROWER STATEMENT MODAL
-function openBorrowerProfileModal(borId) {
-  const b = AppStore.data.borrowers.find(x => x.id === borId);
-  if (!b) return;
-
-  const loans = AppStore.data.loans.filter(l => l.borrowerId === borId);
-  const s = AppStore.data.settings;
-
-  const body = document.getElementById("printable-statement-content");
-  if (!body) return;
-
-  body.innerHTML = `
-    <div class="printable-document">
-      <div class="print-header">
-        <div class="print-brand">
-          <h2>${s.businessName}</h2>
-          <p>${s.address}</p>
-          <p>Phone: ${s.phone}</p>
-        </div>
-        <div class="print-title">
-          <h3>BORROWER STATEMENT</h3>
-          <p>Date: ${formatDate(new Date().toISOString().split("T")[0])}</p>
-        </div>
-      </div>
-      <div class="print-details-grid">
-        <div class="print-box">
-          <h4>Borrower Information</h4>
-          <p><strong>Name:</strong> ${b.firstName} ${b.lastName}</p>
-          <p><strong>NIN / ID:</strong> ${b.nin}</p>
-          <p><strong>Phone:</strong> ${b.phone}</p>
-          <p><strong>Credit Score:</strong> ${b.creditScore}</p>
-        </div>
-        <div class="print-box">
-          <h4>Account Summary</h4>
-          <p><strong>Total Credit Facilities:</strong> ${loans.length}</p>
-          <p><strong>Total Amount Borrowed:</strong> ${formatCurrency(loans.reduce((acc, curr) => acc + curr.principalAmount, 0))}</p>
-          <p><strong>Current Outstanding Balance:</strong> ${formatCurrency(loans.reduce((acc, curr) => acc + curr.remainingBalance, 0))}</p>
-        </div>
-      </div>
-      <h4>Loan History & Accounts</h4>
-      <table class="print-table">
-        <thead>
-          <tr>
-            <th>Loan ID</th>
-            <th>Product</th>
-            <th>Principal</th>
-            <th>Total Paid</th>
-            <th>Balance</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${loans.map(l => `
-            <tr>
-              <td>${l.id}</td>
-              <td>${l.productName}</td>
-              <td>${formatCurrency(l.principalAmount)}</td>
-              <td>${formatCurrency(l.totalPaid)}</td>
-              <td>${formatCurrency(l.remainingBalance)}</td>
-              <td>${l.status}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-      <div class="print-signature-area">
-        <div class="sig-line">Credit Officer Signature</div>
-        <div class="sig-line">System Verification Stamp</div>
-      </div>
-    </div>
-  `;
-
-  document.getElementById("modal-print-statement").classList.add("active");
-}
-
-// 11. LOAN DETAILS & AMORTIZATION SCHEDULE MODAL
 function openLoanDetailsModal(loanId) {
-  const l = AppStore.data.loans.find(x => x.id === loanId);
-  if (!l) return;
+  const loan = AppStore.data.loans.find(l => l.id === loanId);
+  if (!loan) return;
 
-  const container = document.getElementById("loan-details-modal-content");
-  if (!container) return;
+  const modal = document.getElementById("modal-loan-details");
+  if (!modal) return;
 
-  container.innerHTML = `
-    <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
-      <div>
-        <h3 style="font-size:18px; color:var(--bg-primary);">${l.productName} (${l.id})</h3>
-        <p style="font-size:12px; color:#64748B;">Borrower: <strong>${l.borrowerName}</strong> | Applied: ${formatDate(l.applicationDate)}</p>
-      </div>
-      <span class="status-badge ${l.status.toLowerCase().replace(' ', '-')}">${l.status}</span>
-    </div>
-    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; background:#F8FAFC; padding:14px; border-radius:8px; margin-bottom:20px; font-size:12px;">
-      <div><span style="color:#64748B;">Principal:</span> <br><strong>${formatCurrency(l.principalAmount)}</strong></div>
-      <div><span style="color:#64748B;">Interest Rate:</span> <br><strong>${l.interestRate}%</strong></div>
-      <div><span style="color:#64748B;">Total Paid:</span> <br><strong style="color:#059669;">${formatCurrency(l.totalPaid)}</strong></div>
-      <div><span style="color:#64748B;">Remaining Balance:</span> <br><strong style="color:#DC2626;">${formatCurrency(l.remainingBalance)}</strong></div>
-    </div>
-    <h4>Repayment Amortization Schedule</h4>
-    <div style="max-height:300px; overflow-y:auto; margin-top:10px;">
-      <table class="custom-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Due Date</th>
-            <th>Principal</th>
-            <th>Interest</th>
-            <th>Total Installment</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${l.schedule && l.schedule.length > 0 ? l.schedule.map(s => `
-            <tr>
-              <td>Inst #${s.installmentNo}</td>
-              <td>${formatDate(s.dueDate)}</td>
-              <td>${formatCurrency(s.principal)}</td>
-              <td>${formatCurrency(s.interest)}</td>
-              <td><strong>${formatCurrency(s.total)}</strong></td>
-              <td><span class="status-badge ${s.status.toLowerCase()}">${s.status}</span></td>
-            </tr>
-          `).join('') : `<tr><td colspan="6" style="text-align:center; color:#888;">Schedule generated upon approval/disbursement.</td></tr>`}
-        </tbody>
-      </table>
-    </div>
-  `;
+  document.getElementById("modal-loan-title").textContent = `Credit Facility Details - ${loan.id}`;
+  document.getElementById("modal-loan-borrower").textContent = loan.borrowerName;
+  document.getElementById("modal-loan-product").textContent = loan.productName;
+  document.getElementById("modal-loan-principal").textContent = formatCurrency(loan.principalAmount);
+  document.getElementById("modal-loan-balance").textContent = formatCurrency(loan.remainingBalance);
+  document.getElementById("modal-loan-status").textContent = loan.status;
 
-  document.getElementById("modal-loan-details").classList.add("active");
+  const scheduleBody = document.getElementById("modal-loan-schedule-body");
+  if (scheduleBody) {
+    scheduleBody.innerHTML = (loan.schedule || []).map(s => `
+      <tr>
+        <td class="font-tabular">#${s.installmentNo}</td>
+        <td class="font-tabular">${formatDate(s.dueDate)}</td>
+        <td class="font-tabular">${formatCurrency(s.principal)}</td>
+        <td class="font-tabular">${formatCurrency(s.interest)}</td>
+        <td class="font-tabular"><strong>${formatCurrency(s.total)}</strong></td>
+        <td><span class="status-badge ${s.status.toLowerCase()}">${s.status}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  modal.classList.add("active");
 }
 
-function triggerPrint() {
-  window.print();
+function openBorrowerProfileModal(borrowerId) {
+  const borrower = AppStore.data.borrowers.find(b => b.id === borrowerId);
+  if (!borrower) return;
+
+  showToast(`Loading Master Credit File for ${borrower.firstName} ${borrower.lastName}...`, "info");
+}
+
+function printReceiptModal(receiptNo) {
+  showToast(`Generating Official Receipt PDF for ${receiptNo}...`, "info");
 }
