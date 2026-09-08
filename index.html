@@ -8,6 +8,9 @@
   <!-- Remixicon Icons -->
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
   
+  <!-- Chart.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
   <!-- Custom Institutional Stylesheet -->
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -186,7 +189,9 @@
                     <p>Asset mix breakdown across specialized credit facilities</p>
                   </div>
                 </div>
-                <div id="chart-portfolio-mix" style="padding:16px 24px;"></div>
+                <div style="padding:16px 24px; position:relative; height:260px;">
+                  <canvas id="canvas-portfolio-mix"></canvas>
+                </div>
               </div>
             </div>
 
@@ -212,9 +217,12 @@
                 <i class="ri-search-line"></i>
                 <input type="text" id="borrower-search-input" placeholder="Search by name, NIN, phone, or ID..." onkeyup="renderBorrowersView()">
               </div>
-              <button class="btn-primary" onclick="openNewBorrowerModal()">
-                <i class="ri-user-add-line"></i> Register Borrower Profile
-              </button>
+              <div style="display:flex; gap:10px;">
+                <button class="btn-secondary" onclick="exportBorrowersCSV()"><i class="ri-download-2-line"></i> Export CSV</button>
+                <button class="btn-primary" onclick="openNewBorrowerModal()">
+                  <i class="ri-user-add-line"></i> Register Borrower Profile
+                </button>
+              </div>
             </div>
             <div class="table-responsive">
               <table class="custom-table">
@@ -358,6 +366,22 @@
               </div>
             </div>
           </div>
+
+          <div class="card" style="margin-top:20px;">
+            <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="card-title-box">
+                <h3>Institutional Portfolio Yield & Collection Trend</h3>
+                <p>Monthly disbursal vs collection yield analysis</p>
+              </div>
+              <div style="display:flex; gap:10px;">
+                <button class="btn-secondary btn-sm" onclick="exportFullReportCSV()"><i class="ri-file-excel-line"></i> Export Analytics CSV</button>
+                <button class="btn-primary btn-sm" onclick="window.print()"><i class="ri-printer-line"></i> Print Audit Summary</button>
+              </div>
+            </div>
+            <div style="padding:20px; position:relative; height:320px;">
+              <canvas id="canvas-reports-analytics"></canvas>
+            </div>
+          </div>
         </section>
 
         <!-- 8. SETTINGS VIEW -->
@@ -408,6 +432,22 @@
                 <button type="submit" class="btn-primary">Save Parameters</button>
               </div>
             </form>
+          </div>
+
+          <div class="card" style="margin-top:24px;">
+            <div class="card-header">
+              <div class="card-title-box">
+                <h3>System Backup, Data Management & Cloud Sync</h3>
+                <p>Export full state database JSON, restore from backup, or trigger API sync simulation</p>
+              </div>
+            </div>
+            <div style="padding:20px 24px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+              <button class="btn-secondary" onclick="exportDatabaseJSON()"><i class="ri-download-cloud-2-line"></i> Download JSON Backup</button>
+              <button class="btn-secondary" onclick="document.getElementById('import-database-file').click()"><i class="ri-upload-cloud-2-line"></i> Restore JSON Backup</button>
+              <input type="file" id="import-database-file" accept=".json" style="display:none;" onchange="importDatabaseJSON(event)">
+              <button class="btn-secondary" onclick="triggerAPISyncSimulation()"><i class="ri-refresh-line"></i> Trigger REST API Sync Simulation</button>
+              <button class="btn-secondary" style="color:var(--accent-crimson); border-color:var(--accent-crimson);" onclick="if(confirm('Reset all data to defaults?')) AppStore.reset();"><i class="ri-restart-line"></i> Factory Reset Data</button>
+            </div>
           </div>
         </section>
 

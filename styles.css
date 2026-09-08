@@ -980,3 +980,34 @@ th.num-header,
   align-items: center;
   gap: 10px;
 }
+
+.toast-notification.success {
+  border-left: 4px solid var(--accent-emerald);
+}
+
+.toast-notification.error {
+  border-left: 4px solid var(--accent-crimson);
+}
+
+.toast-notification.info {
+  border-left: 4px solid var(--accent-navy);
+}
+
+/* Institutional Report Print Styles */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .sidebar, .top-navbar, .table-toolbar, .navbar-actions, button, .icon-btn {
+    display: none !important;
+  }
+  .main-wrapper {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+}

@@ -333,3 +333,74 @@ const INITIAL_DATA = {
   ]
 };
 
+// Institutional Risk Scoring Engine (CRB Matrix)
+const CRBEngine = {
+  calculateScore(borrower, loanAmount = 0) {
+    let baseScore = borrower.creditScore || 650;
+    const income = parseFloat(borrower.monthlyIncome || 0);
+    
+    // DTI (Debt-to-Income) impact
+    if (income > 0 && loanAmount > 0) {
+      const estimatedMonthlyPayment = (loanAmount * 1.15) / 12;
+      const dtiRatio = (estimatedMonthlyPayment / income) * 100;
+      if (dtiRatio > 50) baseScore -= 45;
+      else if (dtiRatio > 35) baseScore -= 20;
+      else if (dtiRatio < 20) baseScore += 25;
+    }
+
+    // High Income bonus
+    if (income >= 10000000) baseScore += 30;
+    else if (income >= 5000000) baseScore += 15;
+
+    // Clamp score within standard 300 - 850 range
+    const finalScore = Math.min(850, Math.max(300, Math.round(baseScore)));
+    
+    let grade = "C";
+    let status = "Moderate Risk";
+    let color = "#f59e0b"; // amber
+
+    if (finalScore >= 750) {
+      grade = "AAA";
+      status = "Prime / Low Risk";
+      color = "#10b981"; // emerald
+    } else if (finalScore >= 700) {
+      grade = "AA";
+      status = "Low Risk";
+      color = "#10b981";
+    } else if (finalScore >= 640) {
+      grade = "B";
+      status = "Acceptable Standard";
+      color = "#2563eb"; // blue
+    } else if (finalScore >= 580) {
+      grade = "C";
+      status = "Watchlist / High DTI";
+      color = "#f59e0b";
+    } else {
+      grade = "D";
+      status = "Subprime / Critical NPA Risk";
+      color = "#ef4444"; // red
+    }
+
+    return { score: finalScore, grade, status, color };
+  }
+};
+
+// Simulated REST API Service
+const MockAPIService = {
+  async syncData() {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          success: true,
+          timestamp: new Date().toISOString(),
+          syncedRecords: {
+            borrowers: AppStore.data.borrowers.length,
+            loans: AppStore.data.loans.length,
+            repayments: AppStore.data.repayments.length
+          }
+        });
+      }, 1200);
+    });
+  }
+};
+

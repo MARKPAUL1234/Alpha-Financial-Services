@@ -227,9 +227,12 @@ function renderDashboardView() {
   renderDashboardCharts();
 }
 
+let portfolioMixChartInstance = null;
+let reportsAnalyticsChartInstance = null;
+
 function renderDashboardCharts() {
-  const chartCanvas = document.getElementById("chart-portfolio-mix");
-  if (!chartCanvas) return;
+  const canvas = document.getElementById("canvas-portfolio-mix");
+  if (!canvas) return;
 
   const products = AppStore.data.loanProducts;
   const loans = AppStore.data.loans;
@@ -242,29 +245,39 @@ function renderDashboardCharts() {
     }
   });
 
-  const total = Object.values(productCounts).reduce((a, b) => a + b, 0) || 1;
+  const labels = Object.keys(productCounts);
+  const dataValues = Object.values(productCounts);
 
-  let html = `<div style="display:flex; flex-direction:column; gap:12px; margin-top:6px;">`;
-  const colors = ["#091322", "#047857", "#B45309", "#1D4ED8"];
-  let i = 0;
-  for (const [pname, val] of Object.entries(productCounts)) {
-    const pct = Math.round((val / total) * 100);
-    const col = colors[i % colors.length];
-    html += `
-      <div>
-        <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:4px;">
-          <span>${pname}</span>
-          <span class="font-tabular">${formatCurrency(val)} (${pct}%)</span>
-        </div>
-        <div style="height:8px; background:var(--surface-subtle); border-radius:4px; overflow:hidden;">
-          <div style="width:${pct}%; height:100%; background:${col}; border-radius:4px;"></div>
-        </div>
-      </div>
-    `;
-    i++;
+  if (portfolioMixChartInstance) {
+    portfolioMixChartInstance.destroy();
   }
-  html += `</div>`;
-  chartCanvas.innerHTML = html;
+
+  const ctx = canvas.getContext("2d");
+  portfolioMixChartInstance = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: labels,
+      datasets: [{
+        data: dataValues,
+        backgroundColor: ["#091322", "#047857", "#B45309", "#1D4ED8", "#7C3AED"],
+        borderWidth: 2,
+        borderColor: "#ffffff"
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "right",
+          labels: {
+            font: { family: "Inter", size: 12 },
+            boxWidth: 14
+          }
+        }
+      }
+    }
+  });
 }
 
 function renderBorrowersView() {
@@ -485,6 +498,54 @@ function renderReportsView() {
   document.getElementById("report-disbursed").textContent = formatCurrency(totalDisbursed);
   document.getElementById("report-interest").textContent = formatCurrency(totalInterestEarned);
   document.getElementById("report-repayment-rate").textContent = "94.2%";
+
+  renderReportsChart();
+}
+
+function renderReportsChart() {
+  const canvas = document.getElementById("canvas-reports-analytics");
+  if (!canvas) return;
+
+  if (reportsAnalyticsChartInstance) {
+    reportsAnalyticsChartInstance.destroy();
+  }
+
+  const ctx = canvas.getContext("2d");
+  reportsAnalyticsChartInstance = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: ["Jan 2026", "Feb 2026", "Mar 2026", "Apr 2026", "May 2026", "Jun 2026", "Jul 2026", "Aug 2026"],
+      datasets: [
+        {
+          label: "Capital Disbursed (UGX)",
+          data: [15000000, 10000000, 2500000, 5000000, 12000000, 8000000, 30000000, 6000000],
+          backgroundColor: "#091322",
+          borderRadius: 4
+        },
+        {
+          label: "Collections Yield (UGX)",
+          data: [2000000, 3500000, 2350000, 3333340, 2350000, 2350000, 1500000, 4100000],
+          backgroundColor: "#047857",
+          borderRadius: 4
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            font: { family: "Inter", size: 11 },
+            callback: function(val) {
+              return 'UGX ' + (val / 1000000) + 'M';
+            }
+          }
+        }
+      }
+    }
+  });
 }
 
 function renderSettingsView() {
@@ -847,9 +908,88 @@ function openBorrowerProfileModal(borrowerId) {
   const borrower = AppStore.data.borrowers.find(b => b.id === borrowerId);
   if (!borrower) return;
 
-  showToast(`Loading Master Credit File for ${borrower.firstName} ${borrower.lastName}...`, "info");
+  const scoreInfo = CRBEngine.calculateScore(borrower);
+  showToast(`Master CRB File loaded for ${borrower.firstName} ${borrower.lastName} | Rating: ${scoreInfo.grade} (${scoreInfo.status})`, "info");
 }
 
 function printReceiptModal(receiptNo) {
-  showToast(`Generating Official Receipt PDF for ${receiptNo}...`, "info");
+  showToast(`Generating Official Receipt PDF for ${receiptNo}... Opening browser print stream.`, "info");
+  window.print();
+}
+
+// CSV Export Functions
+function downloadCSV(filename, csvContent) {
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function exportBorrowersCSV() {
+  const headers = ["Borrower ID", "First Name", "Last Name", "NIN", "Phone", "Email", "Monthly Income", "Credit Score", "Status"];
+  const rows = AppStore.data.borrowers.map(b => [
+    b.id, `"${b.firstName}"`, `"${b.lastName}"`, b.nin, b.phone, b.email, b.monthlyIncome, b.creditScore, b.status
+  ]);
+  const csvStr = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+  downloadCSV("Alpha_Borrowers_Registry.csv", csvStr);
+  showToast("Borrowers registry exported to CSV successfully", "success");
+}
+
+function exportFullReportCSV() {
+  const headers = ["Facility ID", "Borrower", "Product", "Principal", "Interest Rate %", "Status", "Total Paid", "Remaining Balance"];
+  const rows = AppStore.data.loans.map(l => [
+    l.id, `"${l.borrowerName}"`, `"${l.productName}"`, l.principalAmount, l.interestRate, l.status, l.totalPaid, l.remainingBalance
+  ]);
+  const csvStr = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+  downloadCSV("Alpha_Credit_Portfolio_Report.csv", csvStr);
+  showToast("Institutional portfolio report exported to CSV", "success");
+}
+
+// System Database JSON Export / Import
+function exportDatabaseJSON() {
+  const jsonStr = JSON.stringify(AppStore.data, null, 2);
+  const blob = new Blob([jsonStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `Alpha_Financial_Backup_${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  showToast("Full state database JSON backup generated!", "success");
+}
+
+function importDatabaseJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      if (parsed.settings && parsed.borrowers && parsed.loans) {
+        AppStore.data = parsed;
+        AppStore.save();
+        showToast("Database state successfully restored from JSON backup!", "success");
+        setTimeout(() => location.reload(), 1000);
+      } else {
+        showToast("Invalid database file schema", "error");
+      }
+    } catch (err) {
+      showToast("Error parsing backup JSON file", "error");
+    }
+  };
+  reader.readAsText(file);
+}
+
+async function triggerAPISyncSimulation() {
+  showToast("Initiating secure REST API cloud sync simulation...", "info");
+  const res = await MockAPIService.syncData();
+  if (res.success) {
+    showToast(`REST API Cloud Sync completed at ${new Date(res.timestamp).toLocaleTimeString()}. Records synced: ${res.syncedRecords.loans} loans, ${res.syncedRecords.borrowers} borrowers.`, "success");
+  }
 }
