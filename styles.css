@@ -449,11 +449,40 @@ th.num-header,
   position: relative;
   overflow: hidden;
   transition: var(--transition-fast);
+  cursor: pointer;
+  user-select: none;
 }
 
 .kpi-card:hover {
   border-color: var(--border-subtle);
   box-shadow: var(--shadow-card);
+  transform: translateY(-2px);
+}
+
+.kpi-card:active,
+.btn-primary:active,
+.btn-secondary:active,
+.nav-item:active,
+.action-icon:active,
+.icon-btn:active,
+.role-switcher-btn:active,
+button:active {
+  animation: buttonBlinkPulse 0.35s ease-out;
+}
+
+@keyframes buttonBlinkPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(29, 78, 216, 0.4), 0 0 0 8px rgba(29, 78, 216, 0.25);
+    filter: brightness(1.25);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(29, 78, 216, 0.15), 0 0 0 16px rgba(29, 78, 216, 0);
+    filter: brightness(0.9);
+  }
+  100% {
+    box-shadow: none;
+    filter: brightness(1);
+  }
 }
 
 .kpi-card::before {

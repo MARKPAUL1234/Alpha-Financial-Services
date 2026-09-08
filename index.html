@@ -119,7 +119,7 @@
         <!-- 1. DASHBOARD VIEW -->
         <section id="view-dashboard" class="view-section active">
           <div class="grid-kpi">
-            <div class="kpi-card accent-blue">
+            <div class="kpi-card accent-blue" role="button" tabindex="0" onclick="renderCurrentView('loans')" title="View Credit Facilities">
               <div class="kpi-info">
                 <p>Gross Portfolio Capital</p>
                 <h3 id="kpi-portfolio" class="font-tabular">UGX 0</h3>
@@ -128,7 +128,7 @@
               <div class="kpi-icon-box"><i class="ri-briefcase-4-line"></i></div>
             </div>
 
-            <div class="kpi-card accent-emerald">
+            <div class="kpi-card accent-emerald" role="button" tabindex="0" onclick="renderCurrentView('repayments')" title="View Collections & Repayments">
               <div class="kpi-info">
                 <p>Amortization Collections</p>
                 <h3 id="kpi-collected" class="font-tabular">UGX 0</h3>
@@ -137,7 +137,7 @@
               <div class="kpi-icon-box"><i class="ri-shield-check-line"></i></div>
             </div>
 
-            <div class="kpi-card accent-amber">
+            <div class="kpi-card accent-amber" role="button" tabindex="0" onclick="renderCurrentView('borrowers')" title="View Borrower Registry">
               <div class="kpi-info">
                 <p>Performing Facilities</p>
                 <h3 id="kpi-active-loans" class="font-tabular">0</h3>
@@ -146,7 +146,7 @@
               <div class="kpi-icon-box"><i class="ri-exchange-dollar-line"></i></div>
             </div>
 
-            <div class="kpi-card accent-crimson">
+            <div class="kpi-card accent-crimson" role="button" tabindex="0" onclick="renderCurrentView('arrears')" title="View NPA & Delinquent Facilities">
               <div class="kpi-info">
                 <p>NPA & Delinquent Exposure</p>
                 <h3 id="kpi-arrears" class="font-tabular">UGX 0</h3>
